@@ -1,0 +1,7 @@
+[
+  {"minutes":60,"ids":["victory","mona","liberty","venus"],"walk":22,"buffer":6},
+  {"minutes":90,"ids":["victory","mona","liberty","clubfoot","venus","dying"],"walk":32,"buffer":10},
+  {"minutes":120,"ids":["scribe","victory","mona","liberty","clubfoot","venus","dying"],"walk":41,"buffer":13},
+  {"minutes":150,"ids":["lacemaker","money","scribe","victory","mona","liberty","clubfoot","venus","dying"],"walk":51,"buffer":18},
+  {"minutes":180,"ids":["lacemaker","money","cheat","bather","scribe","victory","mona","liberty","clubfoot","venus","dying","marly"],"walk":64,"buffer":20}
+]

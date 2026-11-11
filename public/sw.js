@@ -1,0 +1,4 @@
+const SHELL='louvre-shell-v1', AUDIO='louvre-audio-v1';
+self.addEventListener('install',e=>{e.waitUntil(caches.open(SHELL).then(c=>c.addAll(['./','./index.html','./manifest.webmanifest','./src/main.js','./src/style.css','./src/works.json','./src/routes.json','./src/provenance.json'])));self.skipWaiting()});
+self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim())});
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;const url=new URL(e.request.url);if(url.origin!==location.origin)return;if(url.pathname.includes('/audio/')){e.respondWith(caches.open(AUDIO).then(async c=>(await c.match(e.request))||fetch(e.request)));return}e.respondWith(caches.match(e.request).then(hit=>hit||fetch(e.request).then(res=>{if(res.ok){const copy=res.clone();caches.open(SHELL).then(c=>c.put(e.request,copy))}return res}))) });

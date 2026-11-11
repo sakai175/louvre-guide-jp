@@ -1,0 +1,112 @@
+[
+  {
+    "id": "wedding",
+    "title": "カナの婚礼",
+    "room": "711",
+    "floor": 1,
+    "wing": "Denon",
+    "verified": false,
+    "source": "https://www.louvre.fr/en/visit/map-entrances-directions",
+    "background": "大きな宴の場面を描いた絵画です。",
+    "look": "人物の集まりと建築の広がりを見てください。"
+  },
+  {
+    "id": "coronation",
+    "title": "ナポレオンの戴冠式",
+    "room": null,
+    "floor": null,
+    "wing": null,
+    "verified": false,
+    "source": "https://collections.louvre.fr/",
+    "background": "国家的な式典を描いた大作です。",
+    "look": "中心人物と周囲の視線を追ってください。"
+  },
+  {
+    "id": "raft",
+    "title": "メデューズ号の筏",
+    "room": null,
+    "floor": null,
+    "wing": null,
+    "verified": false,
+    "source": "https://collections.louvre.fr/",
+    "background": "海難事故を題材にした絵です。",
+    "look": "人々の体がつくる斜めの線を見てください。"
+  },
+  {
+    "id": "psyche",
+    "title": "アモルとプシュケ",
+    "room": null,
+    "floor": null,
+    "wing": null,
+    "verified": false,
+    "source": "https://collections.louvre.fr/",
+    "background": "神話の二人を表した彫刻です。",
+    "look": "翼と腕が作る輪を見てください。"
+  },
+  {
+    "id": "ham",
+    "title": "ハンムラビ法典",
+    "room": null,
+    "floor": null,
+    "wing": null,
+    "verified": false,
+    "source": "https://collections.louvre.fr/",
+    "background": "古代の法を刻んだ石碑です。",
+    "look": "上部の人物像と細かな文字を見比べてください。"
+  },
+  {
+    "id": "lamassu",
+    "title": "ラマッス",
+    "room": null,
+    "floor": null,
+    "wing": null,
+    "verified": false,
+    "source": "https://collections.louvre.fr/",
+    "background": "古代オリエントの守護像です。",
+    "look": "正面と側面で脚の見え方が変わります。"
+  },
+  {
+    "id": "tanut",
+    "title": "タムトネフェレトの棺",
+    "room": "321",
+    "floor": 0,
+    "wing": "Sully",
+    "verified": false,
+    "source": "https://api-www.louvre.fr/sites/default/files/2026-05/2026-05_Plan_Louvre_EN.pdf",
+    "background": "古代エジプトの葬送に使われた棺です。",
+    "look": "表面の色と文字を見てください。"
+  },
+  {
+    "id": "saint",
+    "title": "聖マグダラのマリア",
+    "room": "169",
+    "floor": -1,
+    "wing": "Denon",
+    "verified": false,
+    "source": "https://api-www.louvre.fr/sites/default/files/2026-05/2026-05_Plan_Louvre_EN.pdf",
+    "background": "信仰に結びつく女性像です。",
+    "look": "顔の表情と姿勢を見てください。"
+  },
+  {
+    "id": "virgin",
+    "title": "ジャンヌ・デヴルーの聖母",
+    "room": "503",
+    "floor": 1,
+    "wing": "Sully",
+    "verified": false,
+    "source": "https://api-www.louvre.fr/sites/default/files/2026-05/2026-05_Plan_Louvre_EN.pdf",
+    "background": "小さな金工の聖母像です。",
+    "look": "親子の動きと細工を見てください。"
+  },
+  {
+    "id": "sarco",
+    "title": "夫婦の石棺",
+    "room": "663",
+    "floor": 1,
+    "wing": "Sully",
+    "verified": false,
+    "source": "https://api-www.louvre.fr/sites/default/files/2026-05/2026-05_Plan_Louvre_EN.pdf",
+    "background": "古代の夫婦像を載せた石棺です。",
+    "look": "二人の手ぶりと表情を見比べてください。"
+  }
+]

@@ -1,0 +1,1 @@
+{"name":"louvre-guide-jp","private":true,"version":"0.1.0","type":"module","scripts":{"dev":"node server.js","build":"node build.js","preview":"node server.js dist"}}
