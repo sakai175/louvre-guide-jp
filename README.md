@@ -6,6 +6,8 @@
 
 Node.js 20以上で `npm run dev`。依存ライブラリは不要です。`http://127.0.0.1:4173/` を開きます。配布版は `npm run build` で `dist/` に生成し、GitHub Pagesなどの静的ホスティングへ配置します。HTTPSで公開するとオフライン保存が使えます。
 
+公開版は `https://sakai175.github.io/louvre-guide-jp/` です。`main` ブランチへ更新を送信すると、GitHub Actionsがテストとビルドを行い、成功した版を同じURLへ自動公開します。
+
 ## データ更新
 
 `src/works.json` は確認済み展示室・解説・出典、`src/routes.json` は立ち寄り順と時間配分、`src/provenance.json` は確認日と公式リンクです。`research-queue.json` は未確認の候補で、公開ビルドに入りません。展示室や開室状況の変更時は公式情報で確認し、日付・出典を更新してください。音声の原稿を変えた場合は、Windowsの日本語SAPI音声が使える環境で `powershell -ExecutionPolicy Bypass -File .\generate-audio.ps1` を実行し、`public/audio/` のWAVも更新します。
