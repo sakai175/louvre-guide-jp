@@ -12,6 +12,14 @@ const polygonRoom = (number, wing, points, options={}) => {
   return room(number, wing, x, y, width, height, {points, ...options});
 };
 
+const rectangularRoomFromPoints = (number, wing, points, options={}) => {
+  const xs = points.map(([x]) => x);
+  const ys = points.map(([, y]) => y);
+  const x = Math.min(...xs);
+  const y = Math.min(...ys);
+  return room(number, wing, x, y, Math.max(...xs) - x, Math.max(...ys) - y, options);
+};
+
 const connection = (from, to, wing, type='door', options={}) => ({from:String(from), to:String(to), wing, type, ...options});
 const connectionChain = (numbers, wing, type='door') => numbers.slice(1).map((number, index) => connection(numbers[index], number, wing, type));
 
@@ -19,14 +27,17 @@ const facility = (type, x, y, label='', options={}) => ({type, x, y, label, ...o
 const door = (x1, y1, x2, y2) => ({x1, y1, x2, y2});
 
 export const FLOOR_MAP_VIEWBOX = Object.freeze({x:0, y:0, width:960, height:600});
+export const COMMON_BUILDING_OUTLINE = 'M54 97H427l53 30h118l43-31h252v247H707l-50-29H485l-47 31H62V489H174l31-48h466l35 31h187v60H177l-38-31H54z';
+export const NON_RECTANGULAR_ROOM_NUMBERS = Object.freeze(['135', '338', '536', '830']);
 
 export const floorPlans = Object.freeze({
   2: {
     subtitle:'絵画展示階',
-    outline:'M66 104H430l46 28h115l38-30h256v249H665l-34-26H472l-43 29H66z',
+    outline:COMMON_BUILDING_OUTLINE,
     wings:[
       {id:'richelieu', label:'リシュリュー翼', range:'800-864室', labelX:82, labelY:88},
-      {id:'sully', label:'シュリー翼', range:'900-952室', labelX:770, labelY:88}
+      {id:'sully', label:'シュリー翼', range:'900-952室', labelX:770, labelY:88},
+      {id:'denon', label:'ドゥノン翼', range:'', labelX:73, labelY:558}
     ],
     corridors:[
       'M88 172H432L489 198H622',
@@ -43,18 +54,18 @@ export const floorPlans = Object.freeze({
       room(818,'richelieu',345,172,48,31), room(823,'richelieu',393,172,47,31),
       room(825,'richelieu',440,172,38,31), room(830,'richelieu',440,203,38,31),
       room(837,'richelieu',352,118,43,27),
-      polygonRoom(902,'sully',[[576,174],[613,174],[622,194],[585,194]],{labelX:598,labelY:184}),
-      polygonRoom(900,'sully',[[603,194],[638,194],[646,218],[611,218]],{labelX:625,labelY:206}),
-      polygonRoom(909,'sully',[[650,160],[694,160],[694,188],[650,188]]),
-      polygonRoom(912,'sully',[[694,160],[738,160],[738,188],[694,188]]),
-      polygonRoom(913,'sully',[[738,160],[782,160],[782,188],[738,188]]),
-      polygonRoom(917,'sully',[[782,160],[826,160],[830,188],[782,188]]),
-      polygonRoom(931,'sully',[[826,160],[850,172],[878,232],[850,240],[830,188]]),
-      polygonRoom(940,'sully',[[806,240],[850,240],[860,268],[812,268]]),
-      polygonRoom(952,'sully',[[762,240],[806,240],[812,268],[762,268]]),
-      polygonRoom(944,'sully',[[714,240],[762,240],[762,268],[714,268]]),
-      polygonRoom(936,'sully',[[666,240],[714,240],[714,268],[660,264]]),
-      polygonRoom(924,'sully',[[650,160],[650,188],[666,214],[666,240],[638,230],[622,188]],{labelX:647,labelY:208})
+      rectangularRoomFromPoints(902,'sully',[[576,174],[613,174],[622,194],[585,194]],{labelX:598,labelY:184}),
+      rectangularRoomFromPoints(900,'sully',[[603,194],[638,194],[646,218],[611,218]],{labelX:625,labelY:206}),
+      room(909,'sully',650,160,44,28),
+      room(912,'sully',694,160,44,28),
+      room(913,'sully',738,160,44,28),
+      rectangularRoomFromPoints(917,'sully',[[782,160],[826,160],[830,188],[782,188]]),
+      rectangularRoomFromPoints(931,'sully',[[826,160],[850,172],[878,232],[850,240],[830,188]]),
+      rectangularRoomFromPoints(940,'sully',[[806,240],[850,240],[860,268],[812,268]]),
+      rectangularRoomFromPoints(952,'sully',[[762,240],[806,240],[812,268],[762,268]]),
+      room(944,'sully',714,240,48,28),
+      rectangularRoomFromPoints(936,'sully',[[666,240],[714,240],[714,268],[660,264]]),
+      rectangularRoomFromPoints(924,'sully',[[650,160],[650,188],[666,214],[666,240],[638,230],[622,188]],{labelX:647,labelY:208})
     ],
     connections:[
       ...connectionChain([864,855,848,845,843,836,835],'richelieu'),
@@ -85,7 +96,7 @@ export const floorPlans = Object.freeze({
   },
   1: {
     subtitle:'美術館・企画展',
-    outline:'M60 95H430l48 28h124l41-31h247v238H704l-45-25H484l-44 30H64V488H174l30-47h468l32 29h187v62H176l-34-31H60z',
+    outline:COMMON_BUILDING_OUTLINE,
     wings:[
       {id:'richelieu', label:'リシュリュー翼', range:'500-564室', labelX:76, labelY:78},
       {id:'sully', label:'シュリー翼', range:'600-663室', labelX:775, labelY:78},
@@ -108,25 +119,16 @@ export const floorPlans = Object.freeze({
       room(516,'richelieu',320,165,48,31), room(517,'richelieu',368,165,43,31),
       room(519,'richelieu',411,165,43,31), room(526,'richelieu',454,165,45,31),
       room(531,'richelieu',454,196,45,31),
-      polygonRoom(600,'sully',[[632,158],[680,151],[686,179],[639,186]]),
-      polygonRoom(601,'sully',[[680,151],[727,146],[733,174],[686,179]]),
-      polygonRoom(605,'sully',[[727,146],[773,143],[780,171],[733,174]]),
-      polygonRoom(606,'sully',[[773,143],[817,142],[825,170],[780,171]]),
-      polygonRoom(617,'sully',[[817,142],[859,147],[867,175],[825,170]]),
-      polygonRoom(632,'sully',[[632,158],[639,186],[641,224],[613,220]]),
-      polygonRoom(633,'sully',[[613,220],[641,224],[644,262],[616,258]]),
-      polygonRoom(635,'sully',[[616,258],[644,262],[649,301],[621,297]]),
-      polygonRoom(636,'sully',[[621,297],[649,301],[690,315],[680,345],[632,327]]),
-      polygonRoom(640,'sully',[[680,315],[726,320],[724,350],[680,345]]),
-      polygonRoom(641,'sully',[[726,320],[771,322],[770,352],[724,350]]),
-      polygonRoom(645,'sully',[[771,322],[817,320],[820,350],[770,352]]),
-      polygonRoom(650,'sully',[[817,320],[854,311],[864,339],[820,350]]),
-      polygonRoom(651,'sully',[[854,283],[887,278],[891,306],[854,311]]),
-      polygonRoom(652,'sully',[[855,255],[888,251],[887,278],[854,283]]),
-      polygonRoom(656,'sully',[[857,227],[890,224],[888,251],[855,255]]),
-      polygonRoom(660,'sully',[[859,199],[892,197],[890,224],[857,227]]),
-      polygonRoom(661,'sully',[[861,172],[894,171],[892,197],[859,199]]),
-      polygonRoom(663,'sully',[[859,147],[896,151],[894,171],[861,172]]),
+      room(600,'sully',632,142,48,28), room(601,'sully',680,142,47,28),
+      room(605,'sully',727,142,46,28), room(606,'sully',773,142,44,28),
+      room(617,'sully',817,142,42,28), room(632,'sully',613,170,28,50),
+      room(633,'sully',613,220,28,38), room(635,'sully',613,258,28,39),
+      room(636,'sully',632,310,48,30), room(640,'sully',680,310,46,30),
+      room(641,'sully',726,310,45,30), room(645,'sully',771,310,46,30),
+      room(650,'sully',817,310,42,30), room(651,'sully',859,282,33,28),
+      room(652,'sully',859,254,33,28), room(656,'sully',859,226,33,28),
+      room(660,'sully',859,198,33,28), room(661,'sully',859,170,33,28),
+      room(663,'sully',859,142,37,28),
       room(734,'denon',151,397,48,28), room(727,'denon',199,397,45,28),
       room(726,'denon',244,397,45,28), room(720,'denon',289,397,47,28),
       room(719,'denon',336,397,45,28), room(718,'denon',381,397,45,28),
@@ -166,7 +168,7 @@ export const floorPlans = Object.freeze({
   },
   0: {
     subtitle:'美術館・企画展',
-    outline:'M54 97H427l53 30h118l43-31h252v247H707l-50-29H485l-47 31H62V489H174l31-48h466l35 31h187v60H177l-38-31H54z',
+    outline:COMMON_BUILDING_OUTLINE,
     wings:[
       {id:'richelieu', label:'リシュリュー翼', range:'200-236室', labelX:73, labelY:78},
       {id:'sully', label:'シュリー翼', range:'300-348室', labelX:775, labelY:78},
@@ -186,21 +188,14 @@ export const floorPlans = Object.freeze({
       room(226,'richelieu',389,143,43,28), room(229,'richelieu',432,143,45,28),
       room(230,'richelieu',96,171,57,31), room(231,'richelieu',153,171,58,31),
       room(234,'richelieu',211,171,58,31), room(236,'richelieu',269,171,58,31),
-      polygonRoom(300,'sully',[[631,160],[679,153],[685,181],[638,188]]),
-      polygonRoom(305,'sully',[[679,153],[726,148],[732,176],[685,181]]),
-      polygonRoom(308,'sully',[[726,148],[773,145],[780,173],[732,176]]),
-      polygonRoom(312,'sully',[[773,145],[818,145],[826,173],[780,173]]),
-      polygonRoom(316,'sully',[[818,145],[862,149],[870,177],[826,173]]),
-      polygonRoom(317,'sully',[[862,149],[894,158],[899,186],[870,177]]),
-      polygonRoom(321,'sully',[[870,177],[899,186],[895,226],[866,218]]),
-      polygonRoom(323,'sully',[[866,218],[895,226],[891,266],[862,258]]),
-      polygonRoom(328,'sully',[[862,258],[891,266],[882,306],[854,296]]),
-      polygonRoom(337,'sully',[[854,296],[882,306],[858,337],[830,326]]),
+      room(300,'sully',631,145,48,28), room(305,'sully',679,145,47,28),
+      room(308,'sully',726,145,47,28), room(312,'sully',773,145,45,28),
+      room(316,'sully',818,145,44,28), room(317,'sully',862,145,32,28),
+      room(321,'sully',862,173,32,45), room(323,'sully',862,218,32,40),
+      room(328,'sully',862,258,32,38), room(337,'sully',830,296,32,30),
       polygonRoom(338,'sully',[[636,299],[681,312],[679,342],[628,327]]),
-      polygonRoom(339,'sully',[[681,312],[726,318],[724,348],[679,342]]),
-      polygonRoom(345,'sully',[[726,318],[772,321],[771,351],[724,348]]),
-      polygonRoom(347,'sully',[[772,321],[815,320],[820,350],[771,351]]),
-      polygonRoom(348,'sully',[[815,320],[830,326],[858,337],[820,350]]),
+      room(339,'sully',681,318,45,30), room(345,'sully',726,318,46,30),
+      room(347,'sully',772,318,43,30), room(348,'sully',815,318,43,30),
       room(433,'denon',151,398,48,28), room(427,'denon',199,398,48,28),
       room(424,'denon',247,398,47,28), room(423,'denon',294,398,46,28),
       room(419,'denon',340,398,46,28), room(418,'denon',386,398,46,28),
@@ -239,7 +234,7 @@ export const floorPlans = Object.freeze({
   },
   '-1': {
     subtitle:'美術館・企画展',
-    outline:'M75 112H410l61 36h132l55-36h231v211H710l-52-27H474l-55 33H75V468H186l34-50h451l37 31h181v66H181l-36-31H75z',
+    outline:COMMON_BUILDING_OUTLINE,
     wings:[
       {id:'richelieu', label:'リシュリュー翼', range:'100-106室', labelX:80, labelY:92},
       {id:'sully', label:'シュリー翼', range:'130-137室', labelX:775, labelY:92},
@@ -293,7 +288,7 @@ export const floorPlans = Object.freeze({
   },
   '-2': {
     subtitle:'受付・企画展',
-    outline:'M154 145H403l66 37h119l67-37h181v79h57v143h-57v78H655l-67-37H469l-66 37H154V367H92V224h62z',
+    outline:COMMON_BUILDING_OUTLINE,
     wings:[
       {id:'richelieu', label:'リシュリュー翼入口', range:'', labelX:350, labelY:124},
       {id:'sully', label:'シュリー翼入口', range:'', labelX:718, labelY:124},

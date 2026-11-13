@@ -1,4 +1,4 @@
-import {FLOOR_MAP_VIEWBOX, floorPlans} from './floor-map-data.js';
+import {FLOOR_MAP_VIEWBOX, NON_RECTANGULAR_ROOM_NUMBERS, floorPlans} from './floor-map-data.js';
 
 const BASE_VIEW = Object.freeze({...FLOOR_MAP_VIEWBOX});
 const MIN_VIEW_WIDTH = 360;
@@ -10,7 +10,7 @@ function roomCenter(room) {
 }
 
 function roomShapeMarkup(room) {
-  if (room.points) return `<polygon points="${room.points.map(point => point.join(',')).join(' ')}"/>`;
+  if (room.points && NON_RECTANGULAR_ROOM_NUMBERS.includes(room.number)) return `<polygon points="${room.points.map(point => point.join(',')).join(' ')}"/>`;
   return `<rect x="${room.x}" y="${room.y}" width="${room.width}" height="${room.height}"/>`;
 }
 
