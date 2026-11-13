@@ -1,1 +1,1 @@
-{"name":"louvre-guide-jp","private":true,"version":"0.1.0","type":"module","scripts":{"dev":"node server.js","build":"node build.js","preview":"node server.js dist"}}
+{"name":"louvre-guide-jp","private":true,"version":"0.1.0","type":"module","scripts":{"dev":"node server.js","build":"node build.js","preview":"node server.js dist","test":"node test/map-contract.mjs && node test/navigation.mjs && node test/route-progress.mjs && node test/location-support.mjs && node test/ui-contract.mjs"}}

@@ -10,7 +10,8 @@
     "background": "レオナルド・ダ・ヴィンチが描いた肖像画です。静かな表情の奥に、人物の存在感が伝わってきます。",
     "look": "口元と目元を見比べてください。背景の道や川にも目を向けると、人物との距離感が変わります。",
     "verifiedAt": "2026-11-11",
-    "locationPrecision": "gallery"
+    "locationPrecision": "room",
+    "author": "レオナルド・ダ・ヴィンチ"
   },
   {
     "id": "victory",
@@ -23,7 +24,8 @@
     "background": "翼を広げた勝利の女神の彫像です。船首に立つ姿として作られました。",
     "look": "風を受けた衣のひだと前へ進む姿勢を見てください。頭部がなくても動きが伝わります。",
     "verifiedAt": "2026-11-11",
-    "locationPrecision": "gallery"
+    "locationPrecision": "room",
+    "author": "作者不詳"
   },
   {
     "id": "venus",
@@ -36,7 +38,8 @@
     "background": "古代ギリシャの大理石像です。腕が失われたことで、もとの姿を想像する余地も残りました。",
     "look": "上半身の向きと腰のねじれ、布の重さの違いを見てください。",
     "verifiedAt": "2026-11-11",
-    "locationPrecision": "gallery"
+    "locationPrecision": "room",
+    "author": "作者不詳（古代ギリシャ）"
   },
   {
     "id": "liberty",
@@ -49,7 +52,8 @@
     "background": "ドラクロワが七月革命を題材に描きました。中央の女性は自由を象徴します。",
     "look": "旗へ集まる視線と、前景に描かれた人々の違いを追ってください。",
     "verifiedAt": "2026-11-11",
-    "locationPrecision": "gallery"
+    "locationPrecision": "room",
+    "author": "ウジェーヌ・ドラクロワ"
   },
   {
     "id": "dying",
@@ -62,7 +66,8 @@
     "background": "ミケランジェロが制作した大理石の彫刻です。完成形をめぐってさまざまな解釈があります。",
     "look": "体の曲線と、腕を上げた姿勢による緊張と脱力を見比べてください。",
     "verifiedAt": "2026-11-11",
-    "locationPrecision": "gallery"
+    "locationPrecision": "room",
+    "author": "ミケランジェロ・ブオナローティ"
   },
   {
     "id": "scribe",
@@ -75,7 +80,8 @@
     "background": "古代エジプトの書記を表す像です。文字を扱う仕事の重要さがうかがえます。",
     "look": "こちらを見返す目と、今にも書き始めそうな手元に注目してください。",
     "verifiedAt": "2026-11-11",
-    "locationPrecision": "gallery"
+    "locationPrecision": "room",
+    "author": "作者不詳（古代エジプト）"
   },
   {
     "id": "lacemaker",
@@ -88,7 +94,8 @@
     "background": "フェルメールが室内で作業する女性を描きました。小さな画面に集中した時間が収まっています。",
     "look": "手元の細かな糸と、前景のぼやけた色の対比を見てください。",
     "verifiedAt": "2026-11-11",
-    "locationPrecision": "gallery"
+    "locationPrecision": "room",
+    "author": "ヨハネス・フェルメール"
   },
   {
     "id": "money",
@@ -101,7 +108,8 @@
     "background": "商売の道具と夫婦を描いた北方絵画です。日常の場面に細部が詰まっています。",
     "look": "硬貨を量る手と、本へ向けられた妻の視線を比べてください。",
     "verifiedAt": "2026-11-11",
-    "locationPrecision": "gallery"
+    "locationPrecision": "room",
+    "author": "クエンティン・マサイス"
   },
   {
     "id": "cheat",
@@ -114,7 +122,8 @@
     "background": "カード遊びをめぐる緊張を描いた絵です。登場人物の視線が物語を作ります。",
     "look": "誰が誰を見ているか、手元のカードへ視線を移してみてください。",
     "verifiedAt": "2026-11-11",
-    "locationPrecision": "gallery"
+    "locationPrecision": "room",
+    "author": "ジョルジュ・ド・ラ・トゥール"
   },
   {
     "id": "bather",
@@ -127,7 +136,8 @@
     "background": "静かな室内の人物を描いた作品です。細部より全体の形が印象に残ります。",
     "look": "背中の線と周囲の余白が作る静けさを見てください。",
     "verifiedAt": "2026-11-11",
-    "locationPrecision": "gallery"
+    "locationPrecision": "room",
+    "author": "ジャン＝オーギュスト＝ドミニク・アングル"
   },
   {
     "id": "marly",
@@ -140,7 +150,8 @@
     "background": "跳ね上がる馬と人を組み合わせた彫刻です。大きな動きを石で表しています。",
     "look": "馬の前脚と人の体の向きから、力の流れを追ってください。",
     "verifiedAt": "2026-11-11",
-    "locationPrecision": "gallery"
+    "locationPrecision": "room",
+    "author": "アントワーヌ・コワズヴォ"
   },
   {
     "id": "clubfoot",
@@ -153,6 +164,7 @@
     "background": "人物の姿を観察して描いた絵画です。理想化されない個性が伝わります。",
     "look": "顔の表情と足元までの視線の流れをたどってください。",
     "verifiedAt": "2026-11-11",
-    "locationPrecision": "gallery"
+    "locationPrecision": "room",
+    "author": "ホセ・デ・リベーラ"
   }
 ]
