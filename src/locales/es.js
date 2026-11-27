@@ -611,5 +611,10 @@ export const es = Object.freeze({
   'catalog.myPlanDockTitle': 'Mi Plan: {count} obras',
   'catalog.myPlanDockSub': 'Aprox. {minutes} min · se reordena automáticamente',
   'catalog.myPlanDockView': 'Ver lista',
-  'catalog.myPlanDockStart': 'Abrir mapa ›'
+  'catalog.myPlanDockStart': 'Abrir mapa ›',
+  'settings.refreshCacheTitle': 'Cargar última versión',
+  'settings.refreshCacheSub': 'Borra la caché de interfaz y recarga la app (conserva Mi Plan y progreso)',
+  'settings.refreshCacheBtn': 'Actualizar caché',
+  'settings.fullResetConfirm': '¿Restablecer Mi Plan, el progreso y los ajustes guardados para empezar de nuevo?',
+  'notice.offlineRefreshBlocked': 'No se puede actualizar la caché sin conexión. Inténtalo de nuevo con internet.'
 });

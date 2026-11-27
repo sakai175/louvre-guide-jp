@@ -611,5 +611,10 @@ export const fr = Object.freeze({
   'catalog.myPlanDockTitle': 'Mon Parcours : {count} œuvres',
   'catalog.myPlanDockSub': 'Env. {minutes} min · ordre optimisé automatiquement',
   'catalog.myPlanDockView': 'Voir la liste',
-  'catalog.myPlanDockStart': 'Carte ›'
+  'catalog.myPlanDockStart': 'Carte ›',
+  'settings.refreshCacheTitle': 'Recharger la dernière version',
+  'settings.refreshCacheSub': 'Vide le cache d’interface et recharge l’application (conserve Mon Parcours)',
+  'settings.refreshCacheBtn': 'Actualiser',
+  'settings.fullResetConfirm': 'Réinitialiser Mon Parcours, la progression et les réglages enregistrés ?',
+  'notice.offlineRefreshBlocked': 'Actualisation impossible hors ligne. Réessayez une fois connecté.'
 });

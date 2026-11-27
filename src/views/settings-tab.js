@@ -142,6 +142,13 @@ export function settingsTabView(ctx, hasMini) {
         </div>
         <button type="button" class="secondary compact-btn" data-reset-progress>${esc(tr('settings.resetBtn'))}</button>
       </div>
+      <div class="setting-row">
+        <div>
+          <strong>${esc(tr('settings.refreshCacheTitle'))}</strong>
+          <small>${esc(tr('settings.refreshCacheSub'))}</small>
+        </div>
+        <button type="button" class="secondary compact-btn" data-force-refresh-app>${esc(tr('settings.refreshCacheBtn'))}</button>
+      </div>
     </section>
 
     <section class="visit-note">
@@ -191,5 +198,8 @@ export function wireSettingsTab(ctx) {
     ctx.persistState();
     ctx.setNotice(t('notice.progressReset', null, state.lang), false, 3500);
     ctx.render();
+  });
+  document.querySelector('[data-force-refresh-app]')?.addEventListener('click', () => {
+    ctx.forceRefreshApp?.({resetState: false});
   });
 }

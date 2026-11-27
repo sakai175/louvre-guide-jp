@@ -611,5 +611,10 @@ export const en = Object.freeze({
   'catalog.myPlanDockTitle': 'My Plan: {count} artworks',
   'catalog.myPlanDockSub': 'Approx. {minutes} min · route updates automatically',
   'catalog.myPlanDockView': 'View List',
-  'catalog.myPlanDockStart': 'Start Map ›'
+  'catalog.myPlanDockStart': 'Start Map ›',
+  'settings.refreshCacheTitle': 'Reload latest app version',
+  'settings.refreshCacheSub': 'Clear app UI cache and reload (keeps My Plan and progress)',
+  'settings.refreshCacheBtn': 'Refresh Cache',
+  'settings.fullResetConfirm': 'Reset your saved My Plan, progress, and settings and start over?',
+  'notice.offlineRefreshBlocked': 'Cannot refresh cache while offline. Please try again when connected.'
 });

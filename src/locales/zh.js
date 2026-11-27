@@ -611,5 +611,10 @@ export const zh = Object.freeze({
   'catalog.myPlanDockTitle': '我的行程：{count} 件作品',
   'catalog.myPlanDockSub': '约 {minutes} 分钟 · 添加后自动排成最短顺序',
   'catalog.myPlanDockView': '查看清单',
-  'catalog.myPlanDockStart': '地图导航 ›'
+  'catalog.myPlanDockStart': '地图导航 ›',
+  'settings.refreshCacheTitle': '加载最新应用版本',
+  'settings.refreshCacheSub': '清除界面缓存并重新加载（保留我的行程与参观进度）',
+  'settings.refreshCacheBtn': '更新缓存',
+  'settings.fullResetConfirm': '确定清除已保存的行程、进度和设置并重新开始吗？',
+  'notice.offlineRefreshBlocked': '当前处于离线状态，无法更新缓存。请在恢复网络后重试。'
 });

@@ -611,5 +611,10 @@ export const ja = Object.freeze({
   'catalog.myPlanDockTitle': 'マイプラン：{count}作品',
   'catalog.myPlanDockSub': '目安 約{minutes}分 · 追加すると最短順に自動整列',
   'catalog.myPlanDockView': '一覧を見る',
-  'catalog.myPlanDockStart': '地図で開始 ›'
+  'catalog.myPlanDockStart': '地図で開始 ›',
+  'settings.refreshCacheTitle': 'アプリの最新版を読み込む',
+  'settings.refreshCacheSub': '画面キャッシュをクリアして最新バージョンへ更新します（マイプラン・進捗は保持）',
+  'settings.refreshCacheBtn': 'キャッシュ更新',
+  'settings.fullResetConfirm': '保存されているマイプラン・進捗・設定を初期化して最初から始めますか？',
+  'notice.offlineRefreshBlocked': 'オフライン中のためキャッシュ更新をスキップしました。通信復帰後に再実行してください。'
 });

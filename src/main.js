@@ -2,7 +2,7 @@ import {APP_NAME} from './app-config.js';
 import {detectBrowserLang, ensureWorkLocale, getLangMeta, normalizeLang, setLang, t} from './i18n.js';
 import {indexNavigationGraph} from './navigation.js';
 import {timeCourseBounds} from './my-plan.js';
-import {createAppStore, readPersistedState} from './app/state.js';
+import {createAppStore, readPersistedState, SESSION_PROGRESS_KEY, STORAGE_KEY} from './app/state.js';
 import {bottomTabsMarkup, createNoticeController, esc, noticeMarkup} from './app/ui-helpers.js';
 import {createAudioController} from './app/audio-controller.js';
 import {createPlanActions} from './app/plan-actions.js';
@@ -18,6 +18,75 @@ import {closeWorkDetail, openWorkDetail, workDetailSheetMarkup, wireWorkDetailSh
 import {audioSettingsModalMarkup, miniPlayerMarkup, wireAudioSettingsModal, wireMiniPlayer} from './views/mini-player.js';
 import {incomingSharedPopupMarkup, sharePlanModalMarkup, sharedPlanBannerMarkup, stopQrScanner, wireSharedPlanUI} from './views/plan-share-modal.js';
 import {cleanupOnboardingPositioning, finishOnboardingTour, onboardingTourMarkup, wireOnboardingTour} from './views/onboarding-tour.js';
+
+const isLocalHost = typeof location !== 'undefined'
+  && ['localhost', '127.0.0.1', '::1', ''].includes(location.hostname);
+
+async function clearShellCachesAndSW() {
+  if (typeof caches !== 'undefined') {
+    try {
+      const keys = await caches.keys();
+      await Promise.all(
+        keys
+          .filter(key => key.startsWith('louvre-shell-') || key.startsWith('louvre-images-'))
+          .map(key => caches.delete(key))
+      );
+    } catch { /* ignore */ }
+  }
+  if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+    try {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(reg => reg.unregister()));
+    } catch { /* ignore */ }
+  }
+}
+
+async function forceRefreshApp({resetState = false, onOffline = null} = {}) {
+  if (!resetState && typeof navigator !== 'undefined' && navigator.onLine === false) {
+    if (typeof onOffline === 'function') onOffline();
+    return false;
+  }
+  if (resetState) {
+    try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
+    try { sessionStorage.removeItem(SESSION_PROGRESS_KEY); } catch { /* ignore */ }
+    savePendingSharedPlan(null);
+  }
+  await clearShellCachesAndSW();
+  if (typeof location !== 'undefined') {
+    const nextUrl = new URL(location.href);
+    nextUrl.searchParams.delete('reset');
+    nextUrl.searchParams.delete('clear');
+    nextUrl.searchParams.set('_r', String(Date.now()));
+    location.replace(nextUrl.toString());
+  }
+  return true;
+}
+
+if (typeof location !== 'undefined' && location.search) {
+  const bootParams = new URLSearchParams(location.search);
+  if (bootParams.has('reset') || bootParams.has('clear')) {
+    const preLang = readPersistedState()?.lang ? normalizeLang(readPersistedState().lang) : detectBrowserLang();
+    const ok = isLocalHost || (typeof window !== 'undefined' && window.confirm(t('settings.fullResetConfirm', null, preLang)));
+    if (ok) {
+      await forceRefreshApp({resetState: true});
+      await new Promise(() => {});
+    } else {
+      try {
+        const cleanUrl = new URL(location.href);
+        cleanUrl.searchParams.delete('reset');
+        cleanUrl.searchParams.delete('clear');
+        history.replaceState({}, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+      } catch { /* ignore */ }
+    }
+  }
+  if (bootParams.has('_r')) {
+    try {
+      const cleanUrl = new URL(location.href);
+      cleanUrl.searchParams.delete('_r');
+      history.replaceState({}, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+    } catch { /* ignore */ }
+  }
+}
 
 const bootStarted = performance.now();
 const persistedBoot = readPersistedState();
@@ -135,6 +204,13 @@ const ctx = {
   visibleAudioWorks: () => visibleAudioWorks(ctx),
   openWorkDetail: (workId, roomWorkIds) => openWorkDetail(ctx, workId, roomWorkIds),
   closeWorkDetail: () => closeWorkDetail(ctx),
+  forceRefreshApp: opts => forceRefreshApp({
+    ...opts,
+    onOffline: () => {
+      ctx.setNotice(t('notice.offlineRefreshBlocked', null, ctx.state.lang), false, 3600);
+      render();
+    }
+  }),
   render
 };
 
@@ -471,7 +547,23 @@ function renderContent() {
 }
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register(new URL('sw.js', appBase)).catch(() => {});
+  const allowLocalSw = typeof location !== 'undefined' && new URLSearchParams(location.search).has('sw');
+  if (isLocalHost && !allowLocalSw) {
+    void clearShellCachesAndSW();
+  } else {
+    const hadController = Boolean(navigator.serviceWorker.controller);
+    let swReloading = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController || swReloading) return;
+      const busy = Boolean(ctx.state.playing || ctx.state.planAddOpen || ctx.state.bulkSaveOpen || ctx.state.bulkDownload?.active || ctx.state.shareModal?.open);
+      if (busy) return;
+      swReloading = true;
+      location.reload();
+    });
+    navigator.serviceWorker.register(new URL('sw.js', appBase), {updateViaCache: 'none'})
+      .then(reg => reg.update().catch(() => {}))
+      .catch(() => {});
+  }
 }
 
 window.addEventListener('online', () => { ctx.state.offline = false; ctx.cloudSync.flushPending(); render(); });
@@ -499,6 +591,11 @@ window.addEventListener('pagehide', () => {
   ctx.audio.saveCurrentPosition({persist: true});
 });
 window.addEventListener('keydown', event => {
+  if (!event.repeat && (event.metaKey || event.ctrlKey) && event.shiftKey && event.key.toLowerCase() === 'r') {
+    event.preventDefault();
+    void ctx.forceRefreshApp({resetState: false});
+    return;
+  }
   if (event.key === 'Escape') {
     if (ctx.state.incomingSharedPlan) { ctx.state.incomingSharedPlan = null; savePendingSharedPlan(null); render(); }
     else if (ctx.state.shareModal?.open) { stopQrScanner(); ctx.state.shareModal.open = false; ctx.state.shareModal.scanning = false; render(); }
