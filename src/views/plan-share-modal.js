@@ -153,36 +153,36 @@ export function sharePlanModalMarkup(ctx) {
   `;
 }
 
-export function wireSharedPlanUI(ctx) {
+export function wireSharedPlanUI(ctx, root = document) {
   const {state, byId, planActions} = ctx;
   const lang = state.lang;
   const tr = (key, params) => t(key, params, lang);
 
-  document.querySelector('[data-return-own-plan]')?.addEventListener('click', () => {
+  root.querySelector('[data-return-own-plan]')?.addEventListener('click', () => {
     planActions.returnToOwnPlan();
   });
 
-  document.querySelectorAll('[data-dismiss-shared-popup]').forEach(el => {
+  root.querySelectorAll('[data-dismiss-shared-popup]').forEach(el => {
     el.onclick = () => {
       state.incomingSharedPlan = null;
       savePendingSharedPlan(null);
-      ctx.render();
+      ctx.render({overlayOnly: true});
     };
   });
 
-  document.querySelector('[data-accept-shared-plan]')?.addEventListener('click', () => {
+  root.querySelector('[data-accept-shared-plan]')?.addEventListener('click', () => {
     const incoming = state.incomingSharedPlan;
     if (!incoming) return;
     planActions.activateSharedPlan(incoming);
   });
 
-  document.querySelector('[data-copy-shared-to-myplan]')?.addEventListener('click', () => {
+  root.querySelector('[data-copy-shared-to-myplan]')?.addEventListener('click', () => {
     const incoming = state.incomingSharedPlan;
     if (!incoming) return;
     planActions.copySharedToMyPlan(incoming);
   });
 
-  document.querySelectorAll('[data-open-share-modal]').forEach(btn => {
+  root.querySelectorAll('[data-open-share-modal]').forEach(btn => {
     btn.onclick = () => {
       const mode = btn.dataset.openShareModal === 'import' ? 'import' : 'export';
       const plan = ctx.currentPlan();
@@ -194,27 +194,27 @@ export function wireSharedPlanUI(ctx) {
         error: '',
         scanning: false
       };
-      ctx.render();
+      ctx.render({overlayOnly: true});
     };
   });
 
-  document.querySelectorAll('[data-close-share-modal]').forEach(el => {
+  root.querySelectorAll('[data-close-share-modal]').forEach(el => {
     el.onclick = () => {
       stopQrScanner();
       state.shareModal.open = false;
       state.shareModal.scanning = false;
       state.shareModal.error = '';
-      ctx.render();
+      ctx.render({overlayOnly: true});
     };
   });
 
-  document.querySelectorAll('[data-share-modal-tab]').forEach(btn => {
+  root.querySelectorAll('[data-share-modal-tab]').forEach(btn => {
     btn.onclick = () => {
       stopQrScanner();
       state.shareModal.mode = btn.dataset.shareModalTab === 'import' ? 'import' : 'export';
       state.shareModal.scanning = false;
       state.shareModal.error = '';
-      ctx.render();
+      ctx.render({overlayOnly: true, skipTransition: true});
     };
   });
 

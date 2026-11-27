@@ -94,20 +94,20 @@ export function audioSettingsModalMarkup(ctx) {
   </section>`;
 }
 
-export function wireMiniPlayer(ctx) {
+export function wireMiniPlayer(ctx, root = document) {
   const {state, byId, audio} = ctx;
   const player = audio.player;
 
-  document.querySelectorAll('[data-mini-play]').forEach(btn => {
+  root.querySelectorAll('[data-mini-play]').forEach(btn => {
     btn.onclick = () => {
       const id = btn.dataset.miniPlay;
       audio.toggleAudio(id, ctx.preferredLengthFor(byId[id]));
     };
   });
-  document.querySelector('[data-mini-prev]')?.addEventListener('click', () => audio.stepMiniPlayer(-1));
-  document.querySelector('[data-mini-next]')?.addEventListener('click', () => audio.stepMiniPlayer(1));
-  document.querySelector('[data-mini-close]')?.addEventListener('click', audio.closeMiniPlayer);
-  document.querySelectorAll('[data-seek]').forEach(input => {
+  root.querySelector('[data-mini-prev]')?.addEventListener('click', () => audio.stepMiniPlayer(-1));
+  root.querySelector('[data-mini-next]')?.addEventListener('click', () => audio.stepMiniPlayer(1));
+  root.querySelector('[data-mini-close]')?.addEventListener('click', audio.closeMiniPlayer);
+  root.querySelectorAll('[data-seek]').forEach(input => {
     const updateVisual = val => {
       const ratio = Number(val) / 1000;
       input.style.setProperty('--seek-pct', `${(ratio * 100).toFixed(1)}%`);
@@ -133,42 +133,42 @@ export function wireMiniPlayer(ctx) {
   });
 }
 
-export function wireAudioSettingsModal(ctx) {
+export function wireAudioSettingsModal(ctx, root = document) {
   const {state, audio} = ctx;
 
-  document.querySelectorAll('[data-open-audio-settings]').forEach(btn => {
+  root.querySelectorAll('[data-open-audio-settings]').forEach(btn => {
     btn.onclick = () => {
       state.audioSettingsOpen = true;
-      ctx.render();
+      ctx.render({overlayOnly: true});
     };
   });
-  document.querySelectorAll('[data-close-audio-settings]').forEach(el => {
+  root.querySelectorAll('[data-close-audio-settings]').forEach(el => {
     el.onclick = () => {
       state.audioSettingsOpen = false;
-      ctx.render();
+      ctx.render({overlayOnly: true});
     };
   });
-  document.querySelector('[data-rate-slider]')?.addEventListener('input', event => {
+  root.querySelector('[data-rate-slider]')?.addEventListener('input', event => {
     audio.setPlaybackRate(Number(event.target.value), {rerender: false});
   });
-  document.querySelectorAll('[data-toggle-autoplay]').forEach(btn => {
+  root.querySelectorAll('[data-toggle-autoplay]').forEach(btn => {
     btn.onclick = () => {
       state.autoPlayNext = !state.autoPlayNext;
       ctx.persistState();
       ctx.render();
     };
   });
-  document.querySelectorAll('[data-set-large-text]').forEach(btn => {
+  root.querySelectorAll('[data-set-large-text]').forEach(btn => {
     btn.onclick = () => {
       state.largeText = btn.dataset.setLargeText === 'true';
       ctx.persistState();
       ctx.render();
     };
   });
-  document.querySelectorAll('[data-set-rate]').forEach(btn => {
+  root.querySelectorAll('[data-set-rate]').forEach(btn => {
     btn.onclick = () => audio.setPlaybackRate(Number(btn.dataset.setRate));
   });
-  document.querySelectorAll('[data-default-duration]').forEach(btn => {
+  root.querySelectorAll('[data-default-duration]').forEach(btn => {
     btn.onclick = () => {
       state.duration = Number(btn.dataset.defaultDuration);
       ctx.persistState();

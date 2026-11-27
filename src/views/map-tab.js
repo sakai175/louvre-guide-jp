@@ -218,8 +218,8 @@ export function wireMapTab(ctx) {
       state.tab = 'plan';
       state.detailWorkId = null;
       ctx.persistState();
+      window.scrollTo(0, 0);
       ctx.render();
-      window.scrollTo({top: 0, behavior: 'smooth'});
     };
   });
 

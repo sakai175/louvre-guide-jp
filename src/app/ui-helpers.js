@@ -36,7 +36,7 @@ export function thumbMarkup(ctx, work, sizeClass = '') {
   const fallbackText = esc((work.title || '?').slice(0, 1));
   if (image?.src) {
     const src = new URL(image.src, ctx.appBase).href;
-    return `<span class="work-thumb ${sizeClass} ${wingClass(work.wing)}"><img src="${src}" alt="${esc(work.title)}" loading="lazy" onerror="this.remove()"><em>${fallbackText}</em></span>`;
+    return `<span class="work-thumb ${sizeClass} ${wingClass(work.wing)}"><img src="${src}" alt="${esc(work.title)}" loading="lazy" decoding="async" onerror="this.remove()"><em>${fallbackText}</em></span>`;
   }
   return `<span class="work-thumb ${sizeClass} ${wingClass(work.wing)}" aria-hidden="true"><em>${fallbackText}</em></span>`;
 }

@@ -10,14 +10,14 @@ export function openWorkDetail(ctx, workId, roomWorkIds = null) {
     ? roomWorkIds.filter(id => ctx.byId[id])
     : ctx.roomWorksFor(work).map(item => item.id);
   ctx.state.detailRoomWorks = siblings.length > 1 ? siblings : [];
-  ctx.render();
+  ctx.render({overlayOnly: true});
 }
 
 export function closeWorkDetail(ctx, {skipTransition = false} = {}) {
   if (!ctx.state.detailWorkId) return;
   ctx.state.detailWorkId = null;
   ctx.state.detailRoomWorks = [];
-  ctx.render({skipTransition});
+  ctx.render({skipTransition, overlayOnly: true});
 }
 
 export function workDetailSheetMarkup(ctx) {

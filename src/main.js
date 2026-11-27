@@ -274,10 +274,10 @@ function resolvePostLanguagePhase() {
   return state.hasChosenCourse ? 'main' : 'select_time';
 }
 
-function wireShell() {
+function wireShell(root = document) {
   const {state, maxRoutableCount, planActions} = ctx;
 
-  document.querySelector('[data-change-course]')?.addEventListener('click', () => {
+  root.querySelector('[data-change-course]')?.addEventListener('click', () => {
     const plan = ctx.currentPlan();
     if (!plan.isCustom && plan.kind === 'time') {
       const bounds = timeCourseBounds(plan.minutes || state.minutes, maxRoutableCount);
@@ -290,38 +290,44 @@ function wireShell() {
     state.bulkSaveOpen = false;
     state.courseEntry = 'main';
     state.appPhase = 'select_time';
+    window.scrollTo(0, 0);
     render();
-    window.scrollTo({top: 0});
   });
 
-  document.querySelectorAll('[data-prefer-elevator]').forEach(btn => {
+  root.querySelectorAll('[data-prefer-elevator]').forEach(btn => {
     btn.onclick = () => planActions.setPreferElevator(btn.dataset.preferElevator === 'true');
   });
 
-  document.querySelectorAll('[data-tab]').forEach(btn => {
+  root.querySelectorAll('[data-tab]').forEach(btn => {
     btn.onclick = () => {
-      state.tab = btn.dataset.tab;
+      const nextTab = btn.dataset.tab;
+      const hadOverlay = Boolean(state.detailWorkId || state.audioSettingsOpen || state.bulkSaveOpen || state.shareModal?.open);
+      if (state.tab === nextTab && !hadOverlay && !(nextTab === 'plan' && state.planAddOpen)) {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+        return;
+      }
+      state.tab = nextTab;
       if (state.tab !== 'plan') state.planAddOpen = false;
       state.bulkSaveOpen = false;
       state.detailWorkId = null;
       state.audioSettingsOpen = false;
       ctx.persistState();
+      window.scrollTo(0, 0);
       render();
-      window.scrollTo({top: 0, behavior: 'smooth'});
     };
   });
 
-  document.querySelectorAll('[data-go-audio-mapped]').forEach(btn => {
+  root.querySelectorAll('[data-go-audio-mapped]').forEach(btn => {
     btn.onclick = () => {
       state.tab = 'audio';
       state.audioFilter = 'mapped';
       ctx.persistState();
+      window.scrollTo(0, 0);
       render();
-      window.scrollTo({top: 0, behavior: 'smooth'});
     };
   });
 
-  document.querySelectorAll('[data-show-map]').forEach(btn => {
+  root.querySelectorAll('[data-show-map]').forEach(btn => {
     btn.onclick = event => {
       event.stopPropagation();
       const id = btn.dataset.showMap;
@@ -330,19 +336,19 @@ function wireShell() {
       state.detailWorkId = null;
       state.tab = 'map';
       ctx.persistState();
+      window.scrollTo(0, 0);
       render();
-      window.scrollTo({top: 0, behavior: 'smooth'});
     };
   });
 
-  document.querySelectorAll('[data-toggle-viewed]').forEach(btn => {
+  root.querySelectorAll('[data-toggle-viewed]').forEach(btn => {
     btn.onclick = event => {
       event.stopPropagation();
       planActions.toggleViewed(btn.dataset.toggleViewed);
     };
   });
 
-  document.querySelectorAll('[data-toggle-myplan]').forEach(btn => {
+  root.querySelectorAll('[data-toggle-myplan]').forEach(btn => {
     if (btn.closest('.audio-list')) return;
     btn.onclick = event => {
       event.stopPropagation();
@@ -350,7 +356,7 @@ function wireShell() {
     };
   });
 
-  document.querySelectorAll('[data-open-detail]').forEach(el => {
+  root.querySelectorAll('[data-open-detail]').forEach(el => {
     if (el.closest('.audio-list')) return;
     const open = () => { if (el.dataset.openDetail) openWorkDetail(ctx, el.dataset.openDetail); };
     el.onclick = open;
@@ -359,25 +365,27 @@ function wireShell() {
     };
   });
 
-  document.querySelectorAll('[data-undo-arrival]').forEach(btn => {
+  root.querySelectorAll('[data-undo-arrival]').forEach(btn => {
     btn.onclick = planActions.undoArrival;
   });
 
-  document.querySelectorAll('[data-notice-action="open-myplan"], [data-open-myplan-tab]').forEach(btn => {
+  root.querySelectorAll('[data-notice-action="open-myplan"], [data-open-myplan-tab]').forEach(btn => {
     btn.onclick = () => {
       state.detailWorkId = null;
+      window.scrollTo(0, 0);
       planActions.chooseMyPlan({goMap: false, animate: false});
     };
   });
 
-  document.querySelectorAll('[data-start-myplan-map]').forEach(btn => {
+  root.querySelectorAll('[data-start-myplan-map]').forEach(btn => {
     btn.onclick = () => {
       state.detailWorkId = null;
+      window.scrollTo(0, 0);
       planActions.chooseMyPlan({goMap: true, animate: true});
     };
   });
 
-  document.querySelectorAll('[data-set-lang]').forEach(btn => {
+  root.querySelectorAll('[data-set-lang]').forEach(btn => {
     btn.onclick = () => switchAppLanguage(btn.dataset.setLang);
   });
 }
@@ -403,10 +411,29 @@ function wireMain() {
 
 let renderedPageKey = null;
 let renderedLayerKey = null;
-let activeViewTransition = null;
-let renderSequence = 0;
+let renderedHadLayer = false;
 
-function render({skipTransition = false} = {}) {
+function overlaysMarkup(hasMini) {
+  return `
+    ${workDetailSheetMarkup(ctx)}
+    ${audioSettingsModalMarkup(ctx)}
+    ${sharePlanModalMarkup(ctx)}
+    ${incomingSharedPopupMarkup(ctx)}
+    ${onboardingTourMarkup(ctx)}
+    ${noticeMarkup(ctx, hasMini)}
+  `;
+}
+
+function wireOverlayHost(host) {
+  wireShell(host);
+  wireAudioSettingsModal(ctx, host);
+  wireWorkDetailSheet(ctx);
+  wireMiniPlayer(ctx, host);
+  wireSharedPlanUI(ctx, host);
+  wireOnboardingTour(ctx);
+}
+
+function render({skipTransition = false, overlayOnly = false} = {}) {
   const {state} = ctx;
   if (state.appPhase === 'splash') return;
   const pageKey = state.appPhase === 'main'
@@ -414,38 +441,45 @@ function render({skipTransition = false} = {}) {
     : state.appPhase;
   const layerKey = [state.detailWorkId, state.audioSettingsOpen, state.bulkSaveOpen, state.shareModal?.open,
     Boolean(state.incomingSharedPlan)].join(':');
+  const hasLayer = Boolean(state.detailWorkId || state.audioSettingsOpen || state.bulkSaveOpen || state.shareModal?.open || state.incomingSharedPlan);
+  const prevLayerKey = renderedLayerKey;
+  const prevHadLayer = renderedHadLayer;
   const kind = renderedPageKey && renderedPageKey !== pageKey
     ? (renderedPageKey.startsWith('main:') && pageKey.startsWith('main:') ? 'tab' : 'page')
-    : renderedLayerKey !== null && renderedLayerKey !== layerKey ? 'layer' : null;
+    : prevLayerKey !== null && prevLayerKey !== layerKey ? 'layer' : null;
   renderedPageKey = pageKey;
   renderedLayerKey = layerKey;
-  const sequence = ++renderSequence;
+  renderedHadLayer = hasLayer;
   const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-  if (kind && !skipTransition && !reduceMotion && document.startViewTransition) {
-    activeViewTransition?.skipTransition();
-    document.documentElement.dataset.guideTransition = kind;
-    const transition = document.startViewTransition(() => {
-      if (sequence === renderSequence) {
-        renderContent();
-      }
-    });
-    activeViewTransition = transition;
-    transition.finished.then(() => {
-      if (activeViewTransition === transition) {
-        activeViewTransition = null;
-        delete document.documentElement.dataset.guideTransition;
-      }
-    }, () => {});
+  const shouldAnimateLayer = kind === 'layer' && hasLayer && !prevHadLayer && !skipTransition && !reduceMotion;
+  const overlayHost = overlayOnly && state.appPhase === 'main' ? document.getElementById('guide-overlay-host') : null;
+
+  if (overlayHost && kind !== 'tab' && kind !== 'page') {
+    const hasMini = Boolean(ctx.audio.miniPlayerContext());
+    overlayHost.innerHTML = overlaysMarkup(hasMini);
+    wireOverlayHost(overlayHost);
+    ctx.audio.syncSeekBars();
+    if (shouldAnimateLayer) {
+      const sheet = overlayHost.querySelector('.work-sheet, .audio-settings-sheet, .share-modal-sheet, .share-popup-dialog');
+      const backdrop = overlayHost.querySelector('.sheet-backdrop');
+      sheet?.classList.add('guide-layer-enter');
+      backdrop?.classList.add('guide-backdrop-enter');
+    }
     return;
   }
-  activeViewTransition?.skipTransition();
+
   renderContent();
   if (kind && !skipTransition && !reduceMotion) {
     if (kind === 'tab') app.querySelector('.bottom-tabs button.active')?.classList.add('guide-tab-arrive');
-    const target = kind === 'layer'
-      ? app.querySelector('.work-sheet, .audio-settings-sheet, .bulk-save-sheet, .share-modal-sheet, .share-popup-dialog')
-      : kind === 'tab' ? app.querySelector('.tab-screen') : app.firstElementChild;
-    target?.classList.add(kind === 'layer' ? 'guide-layer-enter' : 'guide-screen-enter');
+    if (kind === 'layer') {
+      if (shouldAnimateLayer) {
+        app.querySelector('.work-sheet, .audio-settings-sheet, .bulk-save-sheet, .share-modal-sheet, .share-popup-dialog')?.classList.add('guide-layer-enter');
+        app.querySelector('.sheet-backdrop')?.classList.add('guide-backdrop-enter');
+      }
+    } else {
+      const target = kind === 'tab' ? app.querySelector('.tab-screen') : app.firstElementChild;
+      target?.classList.add('guide-screen-enter');
+    }
   }
 }
 
@@ -535,12 +569,7 @@ function renderContent() {
     ${body}
     ${miniPlayerMarkup(ctx)}
     ${bottomTabsMarkup(ctx)}
-    ${workDetailSheetMarkup(ctx)}
-    ${audioSettingsModalMarkup(ctx)}
-    ${sharePlanModalMarkup(ctx)}
-    ${incomingSharedPopupMarkup(ctx)}
-    ${onboardingTourMarkup(ctx)}
-    ${noticeMarkup(ctx, hasMini)}
+    <div id="guide-overlay-host">${overlaysMarkup(hasMini)}</div>
   `;
   wireMain();
   ctx.audio.syncSeekBars();
@@ -597,11 +626,11 @@ window.addEventListener('keydown', event => {
     return;
   }
   if (event.key === 'Escape') {
-    if (ctx.state.incomingSharedPlan) { ctx.state.incomingSharedPlan = null; savePendingSharedPlan(null); render(); }
-    else if (ctx.state.shareModal?.open) { stopQrScanner(); ctx.state.shareModal.open = false; ctx.state.shareModal.scanning = false; render(); }
+    if (ctx.state.incomingSharedPlan) { ctx.state.incomingSharedPlan = null; savePendingSharedPlan(null); render({overlayOnly: true}); }
+    else if (ctx.state.shareModal?.open) { stopQrScanner(); ctx.state.shareModal.open = false; ctx.state.shareModal.scanning = false; render({overlayOnly: true}); }
     else if (ctx.state.onboarding?.active) { finishOnboardingTour(ctx); }
-    else if (ctx.state.audioSettingsOpen) { ctx.state.audioSettingsOpen = false; render(); }
-    else if (ctx.state.bulkSaveOpen) { ctx.state.bulkSaveOpen = false; render(); }
+    else if (ctx.state.audioSettingsOpen) { ctx.state.audioSettingsOpen = false; render({overlayOnly: true}); }
+    else if (ctx.state.bulkSaveOpen) { ctx.state.bulkSaveOpen = false; ctx.state.bulkSaveSelectedIds = new Set(); render(); }
     else if (ctx.state.detailWorkId) closeWorkDetail(ctx);
   }
 });

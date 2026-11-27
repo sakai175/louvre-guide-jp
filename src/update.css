@@ -10,7 +10,7 @@
   min-height: 54px;
   padding: 8px max(14px, calc((100vw - 1040px) / 2));
   background: var(--color-sticky-surface);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(6px);
   border-bottom: 1px solid var(--color-line);
 }
 .header-brand {
@@ -101,45 +101,32 @@
   padding-bottom: calc(168px + env(safe-area-inset-bottom));
 }
 
-/* Change scenes only when the visible page changes; keep ordinary updates still. */
-.tab-screen { view-transition-name: guide-page; }
-@keyframes guide-page-out {
-  to { opacity: 0; transform: translateY(-6px) scale(.995); }
-}
+/* Lightweight compositor-only scene and sheet transitions (avoids full-page ViewTransition bitmap stalls). */
 @keyframes guide-page-in {
-  from { opacity: 0; transform: translateY(10px) scale(.995); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translate3d(0, 6px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
-@keyframes guide-layer-in {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-html[data-guide-transition='tab']::view-transition-old(root),
-html[data-guide-transition='tab']::view-transition-new(root) { animation: none; }
-html[data-guide-transition='tab']::view-transition-old(guide-page) {
-  animation: guide-page-out .16s ease-in both;
-}
-html[data-guide-transition='tab']::view-transition-new(guide-page) {
-  animation: guide-page-in .28s cubic-bezier(.22, 1, .36, 1) both;
-}
-html[data-guide-transition='page']::view-transition-old(root),
-html[data-guide-transition='layer']::view-transition-old(root) {
-  animation: guide-page-out .16s ease-in both;
-}
-html[data-guide-transition='page']::view-transition-new(root) {
-  animation: guide-page-in .28s cubic-bezier(.22, 1, .36, 1) both;
-}
-html[data-guide-transition='layer']::view-transition-new(root) {
-  animation: guide-layer-in .24s cubic-bezier(.22, 1, .36, 1) both;
-}
-.guide-screen-enter { animation: guide-page-in .28s cubic-bezier(.22, 1, .36, 1) both; }
-.guide-layer-enter { animation: guide-sheet-in .24s cubic-bezier(.22, 1, .36, 1) both; }
 @keyframes guide-sheet-in {
-  from { opacity: 0; transform: translate(-50%, 12px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
+  from { opacity: 0; transform: translate3d(-50%, 14px, 0); }
+  to { opacity: 1; transform: translate3d(-50%, 0, 0); }
+}
+@keyframes guide-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.guide-screen-enter { animation: guide-page-in .2s cubic-bezier(.22, 1, .36, 1) both; }
+.guide-layer-enter { animation: guide-sheet-in .22s cubic-bezier(.22, 1, .36, 1) both; }
+.guide-backdrop-enter { animation: guide-backdrop-in .18s ease-out both; }
+.audio-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 92px;
+}
+.plan-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 136px;
 }
 @media (prefers-reduced-motion: reduce) {
-  .guide-screen-enter, .guide-layer-enter { animation: none; }
+  .guide-screen-enter, .guide-layer-enter, .guide-backdrop-enter { animation: none; }
 }
 
 /* ==================== BOTTOM FIXED NAVIGATION ==================== */
@@ -154,7 +141,7 @@ html[data-guide-transition='layer']::view-transition-new(root) {
   gap: 2px;
   padding: 6px max(8px, calc((100vw - 680px) / 2)) calc(6px + env(safe-area-inset-bottom));
   background: var(--color-sticky-surface);
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(6px);
   border-top: 1px solid var(--color-line);
   box-shadow: 0 -4px 18px rgb(44 42 40 / 7%);
 }
@@ -198,8 +185,8 @@ html[data-guide-transition='layer']::view-transition-new(root) {
   width: min(760px, calc(100% - 16px));
   border: 1px solid rgb(181 138 69 / 34%);
   border-radius: 16px;
-  background: linear-gradient(180deg, rgb(255 253 250 / 96%), rgb(247 244 237 / 97%));
-  backdrop-filter: blur(18px) saturate(1.15);
+  background: linear-gradient(180deg, rgb(255 253 250 / 97%), rgb(247 244 237 / 98%));
+  backdrop-filter: blur(8px);
   color: var(--color-ink);
   box-shadow: 0 10px 28px rgb(44 42 40 / 13%), 0 2px 6px rgb(44 42 40 / 6%), inset 0 1px 0 rgb(255 255 255 / 90%);
   overflow: hidden;
@@ -1563,8 +1550,7 @@ html[data-guide-transition='layer']::view-transition-new(root) {
   position: fixed;
   inset: 0;
   z-index: 65;
-  background: rgb(20 22 24 / 48%);
-  backdrop-filter: blur(2px);
+  background: rgb(20 22 24 / 44%);
 }
 .work-sheet, .audio-settings-sheet {
   position: fixed;
@@ -2059,11 +2045,6 @@ html[data-guide-transition='layer']::view-transition-new(root) {
   height: 2px;
   border-radius: 2px;
   background: var(--color-gold);
-  view-transition-name: guide-tab-marker;
-}
-::view-transition-group(guide-tab-marker) {
-  animation-duration: .34s;
-  animation-timing-function: cubic-bezier(.22, 1, .36, 1);
 }
 .bottom-tabs button.guide-tab-arrive svg {
   animation: guide-tab-icon-settle .34s cubic-bezier(.22, 1, .36, 1) both;
