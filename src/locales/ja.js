@@ -616,5 +616,13 @@ export const ja = Object.freeze({
   'settings.refreshCacheSub': '画面キャッシュをクリアして最新バージョンへ更新します（マイプラン・進捗は保持）',
   'settings.refreshCacheBtn': 'キャッシュ更新',
   'settings.fullResetConfirm': '保存されているマイプラン・進捗・設定を初期化して最初から始めますか？',
-  'notice.offlineRefreshBlocked': 'オフライン中のためキャッシュ更新をスキップしました。通信復帰後に再実行してください。'
+  'notice.offlineRefreshBlocked': 'オフライン中のためキャッシュ更新をスキップしました。通信復帰後に再実行してください。',
+  'notice.routeWorksBatchAdded': '{count}作品をルートに追加し、巡回順を最適化しました',
+  'notice.optionalWorksBatchAdded': '{count}作品を「時間が余れば見る」に追加しました',
+  'plan.batchSelectBtn': '選択',
+  'plan.batchSelectedBtn': '✓ 選択中',
+  'plan.batchCount': '{count}作品を選択中',
+  'plan.batchClearBtn': 'クリア',
+  'plan.batchConfirmRoute': '{count}作品をルートに追加',
+  'plan.batchConfirmOptional': '{count}作品を候補に追加'
 });

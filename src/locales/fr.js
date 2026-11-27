@@ -616,5 +616,13 @@ export const fr = Object.freeze({
   'settings.refreshCacheSub': 'Vide le cache d’interface et recharge l’application (conserve Mon Parcours)',
   'settings.refreshCacheBtn': 'Actualiser',
   'settings.fullResetConfirm': 'Réinitialiser Mon Parcours, la progression et les réglages enregistrés ?',
-  'notice.offlineRefreshBlocked': 'Actualisation impossible hors ligne. Réessayez une fois connecté.'
+  'notice.offlineRefreshBlocked': 'Actualisation impossible hors ligne. Réessayez une fois connecté.',
+  'notice.routeWorksBatchAdded': '{count} œuvres ajoutées au parcours et ordre optimisé',
+  'notice.optionalWorksBatchAdded': '{count} œuvres ajoutées aux suggestions',
+  'plan.batchSelectBtn': 'Choisir',
+  'plan.batchSelectedBtn': '✓ Choisi',
+  'plan.batchCount': '{count} sélectionnées',
+  'plan.batchClearBtn': 'Effacer',
+  'plan.batchConfirmRoute': 'Ajouter {count} au parcours',
+  'plan.batchConfirmOptional': 'Ajouter {count} en option'
 });

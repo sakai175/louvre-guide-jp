@@ -138,7 +138,7 @@ const store = createAppStore({
   persistedBoot: {routeId: theme.id, planMode: 'preset', hasChosenCourse: true, lang: 'ja'},
   skipSplashImmediate: true, appBase: new URL('../', import.meta.url)
 });
-const ctx = {...store, works, routes, byId: Object.fromEntries(works.map(work => [work.id, work])), navigationIndex: index, setNotice() {}, render() {}};
+const ctx = {...store, works, routes, byId: Object.fromEntries(works.map(work => [work.id, work])), navigationIndex: index, clearProgressNotice() {}, setNotice() {}, render() {}};
 const actions = createPlanActions(ctx);
 assert.equal(actions.addWorkToActivePlan(extraWork.id), true);
 assert.deepEqual(new Set(ctx.currentPlan().ids), new Set([...theme.ids, extraWork.id]), 'adding a work must retain the whole theme plan');
@@ -212,5 +212,24 @@ assert.equal(remOpt.ids.length, 5);
 const remMonaPos = remOpt.ids.indexOf('mona');
 const remCanaPos = remOpt.ids.indexOf('catalog-0003');
 assert.equal(Math.abs(remMonaPos - remCanaPos), 1, 'remaining same-room works must stay grouped after optimization');
+
+// Batch multi-select add, shared-plan protection, and entrance floor (-2) start
+const batchCandidates = works.filter(w => index.nodes.has(`work:${w.id}`) && !store.state.myPlanIds.includes(w.id)).slice(0, 2);
+assert.equal(batchCandidates.length, 2);
+assert.equal(actions.addWorksToActivePlan(batchCandidates.map(w => w.id)), true, 'batch route add must succeed');
+for (const w of batchCandidates) {
+  assert.ok(store.state.myPlanIds.includes(w.id), 'each batch-added work must appear in myPlanIds');
+}
+store.state.sharedPlan = {title: 'Friend', ids: ['mona', 'venus']};
+store.state.planMode = 'shared';
+const routeEditsBeforeShared = JSON.stringify(store.state.routeEdits);
+assert.equal(actions.addWorksToActivePlan([extraWork.id]), false, 'batch add must be rejected while viewing shared plan');
+assert.equal(JSON.stringify(store.state.routeEdits), routeEditsBeforeShared, 'shared plan guard must not corrupt routeEdits');
+assert.ok(!planTabView(ctx, false).includes('data-open-plan-add'), 'shared plan view must hide add-work button');
+globalThis.window = {scrollTo() {}};
+actions.choosePresetCourse('preset-90', {goMap: true, animate: false});
+assert.equal(store.state.floor, -2, 'starting a preset course must open the map at entrance floor (-2)');
+actions.chooseTimedCourse(120, 12, {goMap: true, animate: false});
+assert.equal(store.state.floor, -2, 'starting a timed course must open the map at entrance floor (-2)');
 
 console.log('my-plan and custom routing: passed');

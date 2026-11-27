@@ -616,5 +616,13 @@ export const es = Object.freeze({
   'settings.refreshCacheSub': 'Borra la caché de interfaz y recarga la app (conserva Mi Plan y progreso)',
   'settings.refreshCacheBtn': 'Actualizar caché',
   'settings.fullResetConfirm': '¿Restablecer Mi Plan, el progreso y los ajustes guardados para empezar de nuevo?',
-  'notice.offlineRefreshBlocked': 'No se puede actualizar la caché sin conexión. Inténtalo de nuevo con internet.'
+  'notice.offlineRefreshBlocked': 'No se puede actualizar la caché sin conexión. Inténtalo de nuevo con internet.',
+  'notice.routeWorksBatchAdded': '{count} obras añadidas a la ruta y orden optimizado',
+  'notice.optionalWorksBatchAdded': '{count} obras añadidas a tu lista opcional',
+  'plan.batchSelectBtn': 'Elegir',
+  'plan.batchSelectedBtn': '✓ Elegida',
+  'plan.batchCount': '{count} seleccionadas',
+  'plan.batchClearBtn': 'Limpiar',
+  'plan.batchConfirmRoute': 'Añadir {count} a la ruta',
+  'plan.batchConfirmOptional': 'Añadir {count} como opcional'
 });

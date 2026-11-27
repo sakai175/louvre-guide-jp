@@ -616,5 +616,13 @@ export const ko = Object.freeze({
   'settings.refreshCacheSub': '화면 캐시를 비우고 최신 버전으로 새로고침합니다 (내 플랜·진행 상태 유지)',
   'settings.refreshCacheBtn': '캐시 새로고침',
   'settings.fullResetConfirm': '저장된 내 플랜, 진행 상태 및 설정을 모두 초기화하고 처음부터 시작할까요?',
-  'notice.offlineRefreshBlocked': '오프라인 상태에서는 캐시를 갱신할 수 없습니다. 연결 후 다시 시도해 주세요.'
+  'notice.offlineRefreshBlocked': '오프라인 상태에서는 캐시를 갱신할 수 없습니다. 연결 후 다시 시도해 주세요.',
+  'notice.routeWorksBatchAdded': '{count}작품을 루트에 추가하고 관람 순서를 최적화했습니다',
+  'notice.optionalWorksBatchAdded': '{count}작품을 여유 시 감상 목록에 추가했습니다',
+  'plan.batchSelectBtn': '선택',
+  'plan.batchSelectedBtn': '✓ 선택됨',
+  'plan.batchCount': '{count}작품 선택됨',
+  'plan.batchClearBtn': '해제',
+  'plan.batchConfirmRoute': '{count}작품 루트에 추가',
+  'plan.batchConfirmOptional': '{count}작품 후보에 추가'
 });

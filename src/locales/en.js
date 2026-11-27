@@ -616,5 +616,13 @@ export const en = Object.freeze({
   'settings.refreshCacheSub': 'Clear app UI cache and reload (keeps My Plan and progress)',
   'settings.refreshCacheBtn': 'Refresh Cache',
   'settings.fullResetConfirm': 'Reset your saved My Plan, progress, and settings and start over?',
-  'notice.offlineRefreshBlocked': 'Cannot refresh cache while offline. Please try again when connected.'
+  'notice.offlineRefreshBlocked': 'Cannot refresh cache while offline. Please try again when connected.',
+  'notice.routeWorksBatchAdded': 'Added {count} artworks to the route and optimized the visit order',
+  'notice.optionalWorksBatchAdded': 'Added {count} artworks to your optional list',
+  'plan.batchSelectBtn': 'Select',
+  'plan.batchSelectedBtn': '✓ Selected',
+  'plan.batchCount': '{count} selected',
+  'plan.batchClearBtn': 'Clear',
+  'plan.batchConfirmRoute': 'Add {count} to Route',
+  'plan.batchConfirmOptional': 'Add {count} as Optional'
 });

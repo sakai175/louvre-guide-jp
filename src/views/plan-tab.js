@@ -35,18 +35,36 @@ function planAddResultsMarkup(ctx) {
   const tr = key => t(key, null, state.lang);
   const plan = ctx.currentPlan();
   const included = new Set([...plan.ids, ...(state.optionalWorkIds[plan.id] || [])]);
+  const selectedSet = new Set(state.planAddSelected || []);
   const routeMode = state.planAddMode === 'route';
   const candidates = catalogWorks(works, {query: state.planAddQuery, sort: 'rank-asc', filter: routeMode ? 'mapped' : 'all', lang: state.lang})
     .filter(work => (!routeMode || navigationIndex.nodes.has(`work:${work.id}`)) && !included.has(work.id));
   if (!candidates.length) return `<p class="plan-add-empty">${esc(tr('catalog.emptyMsg'))}</p>`;
   return candidates.map(rawWork => {
     const work = localizeWork(rawWork, state.lang);
-    return `<div class="plan-add-item">
+    const isPicked = selectedSet.has(work.id);
+    const modeAttr = routeMode ? `data-add-route-work="${esc(work.id)}"` : `data-add-optional-work="${esc(work.id)}"`;
+    return `<div class="plan-add-item ${isPicked ? 'is-selected' : ''}" ${modeAttr} data-toggle-plan-add="${esc(work.id)}" role="button" tabindex="0" aria-pressed="${isPicked}">
       ${thumbMarkup(ctx, work, 'thumb-sm')}
       <div class="plan-add-copy"><strong>${esc(work.title)}</strong><small>${esc(workStatus(work, state.lang))}</small></div>
-      <button type="button" class="secondary compact-btn" ${routeMode ? 'data-add-route-work' : 'data-add-optional-work'}="${esc(work.id)}">${esc(tr(routeMode ? 'plan.addRouteAction' : 'plan.addOptionalAction'))}</button>
+      <span class="plan-add-check" aria-hidden="true">${esc(isPicked ? tr('plan.batchSelectedBtn') : tr('plan.batchSelectBtn'))}</span>
     </div>`;
   }).join('');
+}
+
+function planAddBatchBarMarkup(ctx, hasMini) {
+  const {state} = ctx;
+  const pickedCount = (state.planAddSelected || []).length;
+  if (!pickedCount) return '';
+  const tr = (key, params) => t(key, params, state.lang);
+  const isRouteMode = state.planAddMode === 'route';
+  return `<aside class="plan-add-batch-bar ${hasMini ? 'with-mini-player' : ''}" data-plan-add-batch-bar>
+    <span class="plan-add-batch-meta">${esc(tr('plan.batchCount', {count: pickedCount}))}</span>
+    <div class="plan-add-batch-actions">
+      <button type="button" class="secondary compact-btn" data-clear-plan-add>${esc(tr('plan.batchClearBtn'))}</button>
+      <button type="button" class="primary compact-btn" data-confirm-plan-add>${esc(tr(isRouteMode ? 'plan.batchConfirmRoute' : 'plan.batchConfirmOptional', {count: pickedCount}))}</button>
+    </div>
+  </aside>`;
 }
 
 function optionalWorksMarkup(ctx, plan) {
@@ -94,12 +112,15 @@ export function planTabView(ctx, hasMini) {
     </main>`;
   }
   if (state.planAddOpen) {
-    return `<main class="tab-screen plan-add-screen ${hasMini ? 'has-mini-player' : ''}">
+    const pickedCount = (state.planAddSelected || []).length;
+    const isRouteMode = state.planAddMode === 'route';
+    return `<main class="tab-screen plan-add-screen ${hasMini ? 'has-mini-player' : ''} ${pickedCount > 0 ? 'has-batch-bar' : ''}" data-plan-add-screen data-has-mini="${hasMini ? '1' : '0'}">
       <button type="button" class="text-back-btn" data-plan-add-back>← ${esc(tr('plan.addMethodBack'))}</button>
-      <h1>${esc(tr(state.planAddMode === 'route' ? 'plan.addRouteTitle' : 'plan.addOptionalTitle'))}</h1>
-      <p class="plan-add-intro">${esc(tr(state.planAddMode === 'route' ? 'plan.addRouteDescription' : 'plan.addOptionalDescription'))}</p>
+      <h1>${esc(tr(isRouteMode ? 'plan.addRouteTitle' : 'plan.addOptionalTitle'))}</h1>
+      <p class="plan-add-intro">${esc(tr(isRouteMode ? 'plan.addRouteDescription' : 'plan.addOptionalDescription'))}</p>
       <input type="search" class="plan-add-search" data-plan-add-search value="${esc(state.planAddQuery)}" placeholder="${esc(tr('catalog.searchPlaceholder'))}" aria-label="${esc(tr('catalog.searchAria'))}">
       <div class="plan-add-results" data-plan-add-results>${planAddResultsMarkup(ctx)}</div>
+      <div data-plan-add-batch-host>${planAddBatchBarMarkup(ctx, hasMini)}</div>
     </main>`;
   }
   const plan = ctx.currentPlan();
@@ -156,7 +177,7 @@ export function planTabView(ctx, hasMini) {
 
       <div class="plan-summary-actions">
         ${items.length && plan.isCustom && plan.routableIds.length >= 2 ? `<button type="button" class="optimize-plan-btn" data-optimize-myplan>${esc(tr('plan.optimizeBtn'))}</button>` : ''}
-        <button type="button" class="secondary compact-btn" data-open-plan-add>${esc(tr('plan.addWorkBtn'))}</button>
+        ${!plan.isShared ? `<button type="button" class="secondary compact-btn" data-open-plan-add>${esc(tr('plan.addWorkBtn'))}</button>` : ''}
         <button type="button" class="secondary compact-btn" data-open-share-modal="${items.length ? 'export' : 'import'}">${esc(tr('share.shareBtn'))}</button>
         ${plan.isShared ? `<button type="button" class="secondary compact-btn" data-copy-active-shared>${esc(tr('share.copyToMyPlanBtn'))}</button>` : ''}
         ${items.length ? `<button type="button" class="secondary compact-btn" data-bulk-download ${state.bulkDownload.active || allSaved ? 'disabled' : ''}>${esc(saveBtnText)}</button>` : ''}
@@ -249,9 +270,12 @@ export function wirePlanTab(ctx) {
   });
 
   document.querySelector('[data-open-plan-add]')?.addEventListener('click', () => {
+    if (ctx.currentPlan().isShared) return;
+    state.bulkSaveOpen = false;
     state.planAddOpen = true;
     state.planAddMode = null;
     state.planAddQuery = '';
+    state.planAddSelected = [];
     ctx.render();
     window.scrollTo({top: 0});
   });
@@ -259,26 +283,85 @@ export function wirePlanTab(ctx) {
     if (state.planAddMode) state.planAddMode = null;
     else state.planAddOpen = false;
     state.planAddQuery = '';
+    state.planAddSelected = [];
     ctx.render();
   });
   document.querySelectorAll('[data-plan-add-mode]').forEach(btn => {
     btn.onclick = () => {
       state.planAddMode = btn.dataset.planAddMode;
       state.planAddQuery = '';
+      state.planAddSelected = [];
       ctx.render();
     };
   });
   const results = document.querySelector('[data-plan-add-results]');
-  const wireAddResults = () => results?.querySelectorAll('[data-add-route-work], [data-add-optional-work]').forEach(btn => {
-    btn.onclick = () => btn.dataset.addRouteWork
-      ? planActions.addWorkToActivePlan(btn.dataset.addRouteWork)
-      : planActions.addOptionalWorkToActivePlan(btn.dataset.addOptionalWork);
+  const batchHost = document.querySelector('[data-plan-add-batch-host]');
+  const screenEl = document.querySelector('[data-plan-add-screen]');
+  const hasMini = screenEl?.dataset.hasMini === '1';
+
+  const wireBatchBar = () => {
+    document.querySelector('[data-clear-plan-add]')?.addEventListener('click', () => {
+      state.planAddSelected = [];
+      results?.querySelectorAll('[data-toggle-plan-add].is-selected').forEach(el => {
+        el.classList.remove('is-selected');
+        el.setAttribute('aria-pressed', 'false');
+        const badge = el.querySelector('.plan-add-check');
+        if (badge) badge.textContent = t('plan.batchSelectBtn', null, state.lang);
+      });
+      if (batchHost) batchHost.innerHTML = '';
+      screenEl?.classList.remove('has-batch-bar');
+    });
+    document.querySelector('[data-confirm-plan-add]')?.addEventListener('click', () => {
+      const picked = Array.isArray(state.planAddSelected) ? [...state.planAddSelected] : [];
+      if (!picked.length) return;
+      const ok = state.planAddMode === 'route'
+        ? planActions.addWorksToActivePlan(picked)
+        : planActions.addOptionalWorksToActivePlan(picked);
+      if (!ok) {
+        state.planAddSelected = [];
+        ctx.setNotice(t('share.alreadyInMyPlanNotice', null, state.lang), false, 3000);
+        ctx.render();
+      }
+    });
+  };
+
+  const syncBatchBar = () => {
+    if (!batchHost) return;
+    const count = (state.planAddSelected || []).length;
+    batchHost.innerHTML = planAddBatchBarMarkup(ctx, hasMini);
+    screenEl?.classList.toggle('has-batch-bar', count > 0);
+    wireBatchBar();
+  };
+
+  const wireAddResults = () => results?.querySelectorAll('[data-toggle-plan-add]').forEach(el => {
+    const toggle = () => {
+      const id = el.dataset.togglePlanAdd;
+      if (!id) return;
+      const cur = Array.isArray(state.planAddSelected) ? [...state.planAddSelected] : [];
+      const idx = cur.indexOf(id);
+      const nextPicked = idx < 0;
+      if (nextPicked) cur.push(id);
+      else cur.splice(idx, 1);
+      state.planAddSelected = cur;
+      el.classList.toggle('is-selected', nextPicked);
+      el.setAttribute('aria-pressed', String(nextPicked));
+      const badge = el.querySelector('.plan-add-check');
+      if (badge) badge.textContent = t(nextPicked ? 'plan.batchSelectedBtn' : 'plan.batchSelectBtn', null, state.lang);
+      syncBatchBar();
+    };
+    el.onclick = toggle;
+    el.onkeydown = event => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggle(); }
+    };
   });
   wireAddResults();
+  wireBatchBar();
   document.querySelector('[data-plan-add-search]')?.addEventListener('input', event => {
     state.planAddQuery = event.target.value;
-    results.innerHTML = planAddResultsMarkup(ctx);
-    wireAddResults();
+    if (results) {
+      results.innerHTML = planAddResultsMarkup(ctx);
+      wireAddResults();
+    }
   });
 
   document.querySelector('[data-copy-active-shared]')?.addEventListener('click', () => planActions.copySharedToMyPlan());

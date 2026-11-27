@@ -20,6 +20,15 @@ export function createPlanActions(ctx) {
     return 'entrance:pyramid:fm2';
   }
 
+  function floorForCurrentLocation(fallback = -2) {
+    const curId = ctx.state.navigation?.currentNodeId;
+    const node = curId ? ctx.navigationIndex.nodes.get(curId) : null;
+    if (Number.isFinite(node?.floor)) return node.floor;
+    const entrance = ctx.navigationIndex.nodes.get('entrance:pyramid:fm2');
+    if (Number.isFinite(entrance?.floor)) return entrance.floor;
+    return fallback;
+  }
+
   function autoOptimizeMyPlan({startNodeId = null} = {}) {
     if (ctx.state.myPlanIds.length < 2) {
       return {ids: ctx.state.myPlanIds, changed: false, savedPercent: 0};
@@ -33,17 +42,32 @@ export function createPlanActions(ctx) {
     return result;
   }
 
-  function autoOptimizeCustomTimed({startNodeId = null} = {}) {
-    if (!Array.isArray(ctx.state.customTimedIds) || ctx.state.customTimedIds.length < 2) {
-      return {ids: ctx.state.customTimedIds, changed: false, savedPercent: 0};
+  function autoOptimizeActiveRoute({startNodeId = null} = {}) {
+    if (ctx.state.planMode === 'myplan') {
+      return autoOptimizeMyPlan({startNodeId});
     }
-    const anchor = startNodeId || (ctx.state.planMode === 'preset' ? activeStartNodeId() : 'entrance:pyramid:fm2');
-    const result = optimizeRemainingWorks(ctx.navigationIndex, ctx.state.customTimedIds, ctx.state.viewed, {
-      preferElevator: ctx.state.preferElevator,
-      startNodeId: anchor
-    });
-    ctx.state.customTimedIds = result.ids;
-    return result;
+    if (ctx.state.planMode === 'preset') {
+      const edited = ctx.state.routeEdits?.[ctx.state.routeId];
+      if (Array.isArray(edited) && edited.length >= 2) {
+        const anchor = startNodeId || activeStartNodeId();
+        const result = optimizeRemainingWorks(ctx.navigationIndex, edited, ctx.state.viewed, {
+          preferElevator: ctx.state.preferElevator,
+          startNodeId: anchor
+        });
+        ctx.state.routeEdits[ctx.state.routeId] = result.ids;
+        return result;
+      }
+      if (Array.isArray(ctx.state.customTimedIds) && ctx.state.customTimedIds.length >= 2) {
+        const anchor = startNodeId || activeStartNodeId();
+        const result = optimizeRemainingWorks(ctx.navigationIndex, ctx.state.customTimedIds, ctx.state.viewed, {
+          preferElevator: ctx.state.preferElevator,
+          startNodeId: anchor
+        });
+        ctx.state.customTimedIds = result.ids;
+        return result;
+      }
+    }
+    return {ids: [], changed: false, savedPercent: 0};
   }
 
   function rebuildNavigationFromCurrent(ids, startNodeId = null) {
@@ -82,16 +106,12 @@ export function createPlanActions(ctx) {
     if (ctx.state.preferElevator === next) return;
     const apply = () => {
       ctx.state.preferElevator = next;
-      let reordered = false;
-      if (ctx.state.planMode === 'myplan') {
-        reordered = autoOptimizeMyPlan().changed;
-        rebuildNavigationFromCurrent(ctx.routableIds(), activeStartNodeId());
-      } else if (ctx.state.customTimedIds?.length) {
-        reordered = autoOptimizeCustomTimed().changed;
+      const optResult = autoOptimizeActiveRoute();
+      if (optResult.ids.length) {
         rebuildNavigationFromCurrent(ctx.routableIds(), activeStartNodeId());
       }
       ctx.persistState();
-      const noticeKey = reordered
+      const noticeKey = optResult.changed
         ? (ctx.state.preferElevator ? 'notice.evOnOptimized' : 'notice.evOffOptimized')
         : (ctx.state.preferElevator ? 'notice.evOn' : 'notice.evOff');
       ctx.setNotice(tr(noticeKey), false, 3400);
@@ -124,9 +144,7 @@ export function createPlanActions(ctx) {
       const ids = ctx.routableIds();
       ctx.state.navigation = navigationStateFromRoute(ctx.navigationIndex, ids);
       ctx.state.selected = ids[0] ?? null;
-      if (ids[0] && ctx.byId[ids[0]]?.floor != null) {
-        ctx.state.floor = ctx.byId[ids[0]].floor;
-      }
+      ctx.state.floor = floorForCurrentLocation(-2);
       ctx.state.appPhase = 'main';
       if (goMap) ctx.state.tab = 'map';
       ctx.persistState();
@@ -167,9 +185,7 @@ export function createPlanActions(ctx) {
       const ids = ctx.routableIds();
       ctx.state.navigation = navigationStateFromRoute(ctx.navigationIndex, ids);
       ctx.state.selected = ids[0] ?? null;
-      if (ids[0] && ctx.byId[ids[0]]?.floor != null) {
-        ctx.state.floor = ctx.byId[ids[0]].floor;
-      }
+      ctx.state.floor = floorForCurrentLocation(-2);
       ctx.state.appPhase = 'main';
       if (goMap) ctx.state.tab = 'map';
       ctx.persistState();
@@ -196,11 +212,7 @@ export function createPlanActions(ctx) {
       const ids = ctx.routableIds();
       if (!alreadyMyPlan) {
         rebuildNavigationFromCurrent(ids);
-        if (ctx.state.selected && ctx.byId[ctx.state.selected]?.floor != null) {
-          ctx.state.floor = ctx.byId[ctx.state.selected].floor;
-        } else if (ids[0] && ctx.byId[ids[0]]?.floor != null) {
-          ctx.state.floor = ctx.byId[ids[0]].floor;
-        }
+        ctx.state.floor = floorForCurrentLocation(-2);
       }
       ctx.state.appPhase = 'main';
       ctx.state.tab = goMap && ids.length ? 'map' : 'plan';
@@ -236,11 +248,7 @@ export function createPlanActions(ctx) {
       const result = autoOptimizeMyPlan({startNodeId: anchor});
       const nextRoutable = ctx.routableIds();
       rebuildNavigationFromCurrent(nextRoutable, anchor);
-      if (ctx.state.selected && ctx.byId[ctx.state.selected]?.floor != null) {
-        ctx.state.floor = ctx.byId[ctx.state.selected].floor;
-      } else if (nextRoutable[0] && ctx.byId[nextRoutable[0]]?.floor != null) {
-        ctx.state.floor = ctx.byId[nextRoutable[0]].floor;
-      }
+      ctx.state.floor = floorForCurrentLocation(-2);
       ctx.persistState();
       const message = result.changed
         ? (result.savedPercent > 0
@@ -252,49 +260,70 @@ export function createPlanActions(ctx) {
     });
   }
 
-  function addWorkToActivePlan(workId) {
+  function addWorksToActivePlan(workIds) {
     const plan = ctx.currentPlan();
-    if (!ctx.byId[workId] || !ctx.navigationIndex.nodes.has(`work:${workId}`) || plan.ids.includes(workId)) return false;
-    const result = optimizeWorkOrder(ctx.navigationIndex, [...plan.ids, workId], ctx.navOptions());
+    if (plan.isShared) return false;
+    const list = (Array.isArray(workIds) ? workIds : [workIds])
+      .filter((id, idx, arr) => id && arr.indexOf(id) === idx && ctx.byId[id] && ctx.navigationIndex.nodes.has(`work:${id}`) && !plan.ids.includes(id));
+    if (!list.length) return false;
+    const anchor = activeStartNodeId();
+    const result = optimizeRemainingWorks(ctx.navigationIndex, [...plan.ids, ...list], ctx.state.viewed, {
+      preferElevator: ctx.state.preferElevator,
+      startNodeId: anchor
+    });
     if (plan.isCustom) ctx.state.myPlanIds = result.ids;
     else ctx.state.routeEdits[ctx.state.routeId] = result.ids;
-    ctx.state.optionalWorkIds[plan.id] = (ctx.state.optionalWorkIds[plan.id] || []).filter(id => id !== workId);
-    const previous = ctx.state.navigation;
+    const addedSet = new Set(list);
+    ctx.state.optionalWorkIds[plan.id] = (ctx.state.optionalWorkIds[plan.id] || []).filter(id => !addedSet.has(id));
     const routableIds = result.ids.filter(id => ctx.navigationIndex.nodes.has(`work:${id}`));
-    const nextId = routableIds.find(id => !ctx.state.viewed.has(id)) || routableIds[0];
-    const base = navigationStateFromRoute(ctx.navigationIndex, routableIds);
-    ctx.state.navigation = {
-      ...base,
-      currentNodeId: previous?.currentNodeId && ctx.navigationIndex.nodes.has(previous.currentNodeId) ? previous.currentNodeId : base.currentNodeId,
-      destinationNodeId: `work:${nextId}`,
-      passedNodeIds: previous?.passedNodeIds || base.passedNodeIds,
-      passedNodeGroups: previous?.passedNodeGroups || base.passedNodeGroups,
-      lastConfirmedWorkId: previous?.lastConfirmedWorkId || null,
-      lastConfirmedMethod: previous?.lastConfirmedMethod || 'route-start'
-    };
-    ctx.state.selected = nextId;
+    rebuildNavigationFromCurrent(routableIds, anchor);
     ctx.state.undo = null;
     ctx.state.planAddOpen = false;
     ctx.state.planAddMode = null;
     ctx.state.planAddQuery = '';
+    ctx.state.planAddSelected = [];
     ctx.persistState();
-    ctx.setNotice(tr('notice.routeWorkAdded'), false, 3200);
+    ctx.setNotice(
+      list.length === 1
+        ? tr('notice.routeWorkAdded')
+        : tr('notice.routeWorksBatchAdded', {count: list.length}),
+      false,
+      3400
+    );
+    ctx.render();
+    return true;
+  }
+
+  function addWorkToActivePlan(workId) {
+    return addWorksToActivePlan([workId]);
+  }
+
+  function addOptionalWorksToActivePlan(workIds) {
+    const plan = ctx.currentPlan();
+    if (plan.isShared) return false;
+    const optionalIds = ctx.state.optionalWorkIds[plan.id] || [];
+    const list = (Array.isArray(workIds) ? workIds : [workIds])
+      .filter((id, idx, arr) => id && arr.indexOf(id) === idx && ctx.byId[id] && !plan.ids.includes(id) && !optionalIds.includes(id));
+    if (!list.length) return false;
+    ctx.state.optionalWorkIds[plan.id] = [...optionalIds, ...list];
+    ctx.state.planAddOpen = false;
+    ctx.state.planAddMode = null;
+    ctx.state.planAddQuery = '';
+    ctx.state.planAddSelected = [];
+    ctx.persistState();
+    ctx.setNotice(
+      list.length === 1
+        ? tr('notice.optionalWorkAdded')
+        : tr('notice.optionalWorksBatchAdded', {count: list.length}),
+      false,
+      3400
+    );
     ctx.render();
     return true;
   }
 
   function addOptionalWorkToActivePlan(workId) {
-    const plan = ctx.currentPlan();
-    const optionalIds = ctx.state.optionalWorkIds[plan.id] || [];
-    if (!ctx.byId[workId] || plan.ids.includes(workId) || optionalIds.includes(workId)) return false;
-    ctx.state.optionalWorkIds[plan.id] = [...optionalIds, workId];
-    ctx.state.planAddOpen = false;
-    ctx.state.planAddMode = null;
-    ctx.state.planAddQuery = '';
-    ctx.persistState();
-    ctx.setNotice(tr('notice.optionalWorkAdded'), false, 3200);
-    ctx.render();
-    return true;
+    return addOptionalWorksToActivePlan([workId]);
   }
 
   function removeOptionalWorkFromActivePlan(workId) {
@@ -506,12 +535,8 @@ export function createPlanActions(ctx) {
     }
     const candidate = ctx.state.support.candidates.find(item => item.nodeId === candidateId);
     ctx.clearProgressNotice();
-    let reordered = false;
-    if (ctx.state.planMode === 'myplan') {
-      reordered = autoOptimizeMyPlan({startNodeId: candidateId}).changed;
-      rebuildNavigationFromCurrent(ctx.routableIds(), candidateId);
-    } else if (ctx.state.customTimedIds?.length) {
-      reordered = autoOptimizeCustomTimed({startNodeId: candidateId}).changed;
+    const optResult = autoOptimizeActiveRoute({startNodeId: candidateId});
+    if (optResult.ids.length) {
       rebuildNavigationFromCurrent(ctx.routableIds(), candidateId);
     } else {
       ctx.state.navigation = result.navigation;
@@ -520,7 +545,7 @@ export function createPlanActions(ctx) {
     ctx.persistState();
     const roomLabel = candidate?.label ?? tr('notice.enteredRoomFallback');
     ctx.setNotice(
-      tr(reordered ? 'notice.arrivalOptimized' : 'notice.arrivalUpdated', {room: roomLabel}),
+      tr(optResult.changed ? 'notice.arrivalOptimized' : 'notice.arrivalUpdated', {room: roomLabel}),
       false,
       4500
     );
@@ -554,9 +579,7 @@ export function createPlanActions(ctx) {
     const ids = ctx.routableIds();
     ctx.state.navigation = navigationStateFromRoute(ctx.navigationIndex, ids);
     ctx.state.selected = validIds[0] ?? null;
-    if (ids[0] && ctx.byId[ids[0]]?.floor != null) {
-      ctx.state.floor = ctx.byId[ids[0]].floor;
-    }
+    ctx.state.floor = floorForCurrentLocation(-2);
     ctx.state.appPhase = 'main';
     ctx.state.tab = ids.length ? 'map' : 'plan';
     ctx.persistState();
@@ -575,9 +598,7 @@ export function createPlanActions(ctx) {
     const ids = ctx.routableIds();
     ctx.state.navigation = navigationStateFromRoute(ctx.navigationIndex, ids);
     ctx.state.selected = ctx.state.sharedPlan.ids[0] ?? null;
-    if (ids[0] && ctx.byId[ids[0]]?.floor != null) {
-      ctx.state.floor = ctx.byId[ids[0]].floor;
-    }
+    ctx.state.floor = floorForCurrentLocation(-2);
     ctx.state.appPhase = 'main';
     if (goMap && ids.length) ctx.state.tab = 'map';
     ctx.persistState();
@@ -602,8 +623,8 @@ export function createPlanActions(ctx) {
     ctx.state.selected = (snap?.selected && ctx.byId[snap.selected]) ? snap.selected : (ids[0] ?? null);
     if (Number.isFinite(snap?.floor)) {
       ctx.state.floor = snap.floor;
-    } else if (ids[0] && ctx.byId[ids[0]]?.floor != null) {
-      ctx.state.floor = ctx.byId[ids[0]].floor;
+    } else {
+      ctx.state.floor = floorForCurrentLocation(-2);
     }
     ctx.persistState();
     ctx.setNotice(tr('share.returnedOwnNotice', {label: ctx.currentPlan().label}), false, 3200);
@@ -643,7 +664,9 @@ export function createPlanActions(ctx) {
     copySharedToMyPlan,
     handleOptimizeMyPlan,
     addWorkToActivePlan,
+    addWorksToActivePlan,
     addOptionalWorkToActivePlan,
+    addOptionalWorksToActivePlan,
     removeOptionalWorkFromActivePlan,
     syncMyPlanNavigation,
     selectRouteWork,

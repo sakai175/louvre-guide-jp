@@ -247,7 +247,7 @@ export function optimizeWorkOrder(navigationIndex, workIds, {preferElevator = fa
   const afterCost = pathCostForIds(optimizedRoutable);
   const finalIds = [...optimizedRoutable, ...unmapped];
   const changed = finalIds.some((id, idx) => id !== input[idx]);
-  const savedPercent = beforeCost > 0 && afterCost < beforeCost
+  const savedPercent = beforeCost > 0 && beforeCost < 1e9 && afterCost < beforeCost
     ? Math.max(1, Math.round((1 - afterCost / beforeCost) * 100))
     : 0;
   return {

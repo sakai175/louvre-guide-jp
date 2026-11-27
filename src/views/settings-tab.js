@@ -195,6 +195,8 @@ export function wireSettingsTab(ctx) {
     state.audioPositions = {};
     state.navigation = navigationStateFromRoute(navigationIndex, ctx.routableIds());
     state.selected = ctx.currentPlan().ids[0] ?? null;
+    const resetNode = state.navigation?.currentNodeId ? navigationIndex.nodes.get(state.navigation.currentNodeId) : null;
+    state.floor = Number.isFinite(resetNode?.floor) ? resetNode.floor : -2;
     ctx.persistState();
     ctx.setNotice(t('notice.progressReset', null, state.lang), false, 3500);
     ctx.render();

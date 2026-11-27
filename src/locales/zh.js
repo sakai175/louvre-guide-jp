@@ -616,5 +616,13 @@ export const zh = Object.freeze({
   'settings.refreshCacheSub': '清除界面缓存并重新加载（保留我的行程与参观进度）',
   'settings.refreshCacheBtn': '更新缓存',
   'settings.fullResetConfirm': '确定清除已保存的行程、进度和设置并重新开始吗？',
-  'notice.offlineRefreshBlocked': '当前处于离线状态，无法更新缓存。请在恢复网络后重试。'
+  'notice.offlineRefreshBlocked': '当前处于离线状态，无法更新缓存。请在恢复网络后重试。',
+  'notice.routeWorksBatchAdded': '已将 {count} 件作品加入路线并优化参观顺序',
+  'notice.optionalWorksBatchAdded': '已将 {count} 件作品加入备选清单',
+  'plan.batchSelectBtn': '选择',
+  'plan.batchSelectedBtn': '✓ 已选',
+  'plan.batchCount': '已选 {count} 件',
+  'plan.batchClearBtn': '清除',
+  'plan.batchConfirmRoute': '加入路线 ({count})',
+  'plan.batchConfirmOptional': '加入备选 ({count})'
 });

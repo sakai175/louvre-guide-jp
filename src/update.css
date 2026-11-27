@@ -3077,3 +3077,70 @@ button:not(:disabled):active {
   .myplan-dock-copy small { font-size: 10.5px; }
   .myplan-dock .compact-btn { padding: 6px 10px; font-size: 11.5px; }
 }
+
+/* ==================== PLAN BATCH ADD MULTI-SELECT ==================== */
+.plan-add-screen.has-batch-bar {
+  padding-bottom: calc(154px + env(safe-area-inset-bottom));
+}
+.plan-add-item {
+  cursor: pointer;
+}
+.plan-add-item.is-selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+.plan-add-check {
+  flex: none;
+  min-height: 34px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+.plan-add-item.is-selected .plan-add-check {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-accent);
+}
+.plan-add-batch-bar {
+  position: fixed;
+  left: 50%;
+  bottom: calc(68px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 44;
+  width: min(680px, calc(100% - 20px));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-line);
+  background: var(--color-sticky-surface);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-soft);
+}
+.plan-add-batch-bar.with-mini-player {
+  bottom: calc(144px + env(safe-area-inset-bottom));
+}
+.plan-add-batch-meta {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+.plan-add-batch-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+@media (max-width: 640px) {
+  .plan-add-batch-bar {
+    padding: 9px 11px;
+    gap: 8px;
+  }
+  .plan-add-batch-bar .compact-btn { padding: 6px 10px; font-size: 11.5px; }
+}
