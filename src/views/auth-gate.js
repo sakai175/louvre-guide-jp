@@ -65,8 +65,14 @@ export function authGateView(ctx) {
 export function wireAuthGate(ctx) {
   const {state, cloudSync} = ctx;
 
-  document.querySelector('[data-signin-google]')?.addEventListener('click', () => {
+  document.querySelector('[data-signin-google]')?.addEventListener('click', event => {
+    const btn = event.currentTarget;
+    if (btn) btn.disabled = true;
     cloudSync?.signInWithGoogle();
+  });
+
+  document.querySelector('#gate-auth-email')?.addEventListener('input', event => {
+    state.auth.emailDraft = event.target.value;
   });
 
   document.querySelector('[data-signin-email]')?.addEventListener('submit', event => {
@@ -77,6 +83,7 @@ export function wireAuthGate(ctx) {
 
   document.querySelector('[data-continue-guest]')?.addEventListener('click', () => {
     state.hasCompletedAuthGate = true;
+    state.courseEntry = 'language';
     state.appPhase = state.hasChosenCourse ? 'main' : 'select_time';
     ctx.persistState();
     ctx.render();

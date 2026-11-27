@@ -130,15 +130,9 @@ export function planTabView(ctx, hasMini) {
           <span class="eyebrow">${esc(plan.isShared ? tr('plan.eyebrowShared') : plan.isCustom ? tr('plan.eyebrowCustom') : plan.kind === 'theme' ? tr('plan.eyebrowTheme') : tr('plan.eyebrowRec'))}</span>
           <h1>${esc(plan.label)}</h1>
         </div>
-        ${items.length ? `<div class="plan-progress-ring ${isAllDone ? 'is-complete' : ''}">
-          <strong>${pct}%</strong>
-          <span>${esc(tr('plan.progressBadge', {viewed: viewedInPlan, total: items.length}))}</span>
-        </div>` : `<div class="plan-progress-badge">${esc(tr('plan.progressBadge', {viewed: viewedInPlan, total: items.length}))}</div>`}
+        <div class="plan-progress-badge">${esc(tr('plan.progressBadge', {viewed: viewedInPlan, total: items.length}))}${items.length ? ` (${pct}%)` : ''}</div>
       </div>
       ${items.length ? `<div class="plan-progress-panel">
-        ${items.length <= 20 ? `<div class="progress-steps-track" aria-hidden="true">
-          ${items.map(w => `<i class="${state.viewed.has(w.id) ? 'is-done' : w.id === destId ? 'is-next' : ''}"></i>`).join('')}
-        </div>` : ''}
         <div class="plan-progress-foot">
           ${isAllDone
             ? `<span class="progress-complete-banner">${esc(tr('plan.completeBanner', {total: items.length}))}</span>`
@@ -146,7 +140,7 @@ export function planTabView(ctx, hasMini) {
         </div>
         ${!isAllDone && nextWork ? `<div class="progress-next-strip">
           <button type="button" class="progress-next-info" data-open-detail="${esc(nextWork.id)}">
-            ${thumbMarkup(ctx, nextWork, 'thumb-xs')}
+            ${thumbMarkup(ctx, nextWork, 'thumb-sm')}
             <span>
               <small>${esc(tr('plan.nextStopLabel'))}</small>
               <strong>${esc(nextWork.title)}</strong>

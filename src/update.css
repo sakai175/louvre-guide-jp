@@ -2273,10 +2273,9 @@ button:not(:disabled):active {
   justify-content: space-between;
   gap: 10px;
   padding: 8px 14px;
-  background: linear-gradient(90deg, #1b464d, #245c65);
-  color: #fff;
-  border-bottom: 1px solid rgb(243 216 142 / 35%);
-  box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border-bottom: 1px solid var(--color-line);
 }
 .shared-plan-banner-copy {
   display: flex;
@@ -2289,10 +2288,11 @@ button:not(:disabled):active {
   flex: none;
   padding: 2px 8px;
   border-radius: 999px;
-  background: #f0d79a;
-  color: #2c1e05;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-dark);
+  border: 1px solid #c5dad1;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 700;
 }
 .shared-plan-banner-copy strong {
   font-size: 12.5px;
@@ -2303,21 +2303,21 @@ button:not(:disabled):active {
 }
 .shared-plan-banner-copy small {
   font-size: 11px;
-  color: rgb(255 255 255 / 78%);
+  color: var(--color-muted);
 }
 .shared-return-btn {
   flex: none;
-  min-height: 32px;
+  min-height: 30px;
   padding: 4px 11px;
-  border: 1px solid rgb(255 255 255 / 55%);
+  border: 1px solid var(--color-line);
   border-radius: 999px;
-  background: rgb(255 255 255 / 14%);
-  color: #fff;
+  background: var(--color-canvas);
+  color: var(--color-ink);
   font-size: 11.5px;
   font-weight: 700;
   white-space: nowrap;
 }
-.shared-return-btn:hover { background: rgb(255 255 255 / 24%); }
+.shared-return-btn:hover { border-color: var(--color-primary); color: var(--color-primary-dark); }
 
 .share-popup-dialog,
 .share-modal-sheet {
@@ -2556,7 +2556,47 @@ button:not(:disabled):active {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
+}
+.course-brand-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.course-brand-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  object-fit: cover;
+  flex: none;
+  border: 1px solid var(--color-line);
+}
+.lang-switch-pills {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.lang-pill {
+  min-height: 30px;
+  padding: 4px 10px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-muted);
+  font-size: 11.5px;
+  font-weight: 700;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+.lang-pill:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+}
+.lang-pill.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
 }
 .auth-gate-card {
   padding: 22px 18px;
@@ -2601,12 +2641,14 @@ button:not(:disabled):active {
   position: relative;
 }
 .auth-gate-benefits li::before {
-  content: '✦';
+  content: '';
   position: absolute;
-  left: 0;
-  top: 1px;
-  color: #b98d3f;
-  font-size: 11px;
+  left: 3px;
+  top: 7px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-gold);
 }
 .auth-gate-benefits strong { font-size: 12.5px; color: var(--color-ink); }
 .auth-gate-benefits span { font-size: 11.5px; color: var(--color-muted); line-height: 1.45; }
@@ -2673,9 +2715,9 @@ button:not(:disabled):active {
 }
 .tour-spotlight {
   position: fixed;
-  border: 2.5px solid #e7c67b;
+  border: 2px solid var(--color-gold);
   border-radius: 12px;
-  box-shadow: 0 0 0 9999px rgb(14 21 25 / 72%), 0 0 0 4px rgb(231 198 123 / 30%);
+  box-shadow: 0 0 0 9999px rgb(24 22 19 / 64%);
   pointer-events: none;
   transition: left .24s ease, top .24s ease, width .24s ease, height .24s ease;
 }
@@ -2683,11 +2725,11 @@ button:not(:disabled):active {
   position: fixed;
   width: min(340px, calc(100vw - 24px));
   padding: 15px 16px;
-  border-radius: 16px;
-  border: 1px solid rgb(231 198 123 / 55%);
+  border-radius: 14px;
+  border: 1px solid var(--color-line);
   background: var(--color-surface);
   color: var(--color-ink);
-  box-shadow: 0 16px 40px rgb(0 0 0 / 36%);
+  box-shadow: 0 12px 30px rgb(24 22 19 / 22%);
   transition: left .22s ease, top .22s ease;
 }
 .tour-popover-head {
@@ -2743,59 +2785,14 @@ button:not(:disabled):active {
   gap: 8px;
 }
 
-/* ==================== UPGRADED PROGRESS BAR & DONE BUTTONS ==================== */
+/* ==================== PROGRESS & DONE BUTTONS (GALLERY HARMONIZED) ==================== */
 .plan-summary-card.is-complete {
-  border-color: #d6aa4e;
-  background: linear-gradient(180deg, #fffdf7, #fdf7e9);
-}
-.plan-progress-ring {
-  flex: none;
-  min-width: 78px;
-  padding: 7px 11px;
-  border-radius: 12px;
-  background: var(--color-primary-soft);
-  border: 1px solid rgb(31 83 90 / 18%);
-  text-align: center;
-}
-.plan-progress-ring strong {
-  display: block;
-  font-size: 20px;
-  line-height: 1.1;
-  color: var(--color-primary-dark);
-  font-variant-numeric: tabular-nums;
-}
-.plan-progress-ring span {
-  display: block;
-  margin-top: 2px;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--color-muted);
-}
-.plan-progress-ring.is-complete {
-  background: linear-gradient(135deg, #f3d778, #cfa032);
-  border-color: #b5841a;
-}
-.plan-progress-ring.is-complete strong,
-.plan-progress-ring.is-complete span {
-  color: #362200;
+  border-color: #c6b69b;
+  background: var(--color-surface);
 }
 .plan-progress-panel {
-  margin: 12px 0 10px;
+  margin: 10px 0 12px;
 }
-.progress-steps-track {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 9px;
-}
-.progress-steps-track i {
-  flex: 1;
-  height: 4px;
-  border-radius: 99px;
-  background: #e5ddd2;
-  transition: background-color .2s ease;
-}
-.progress-steps-track i.is-done { background: #2c8a6c; }
-.progress-steps-track i.is-next { background: var(--color-destination); }
 .plan-progress-foot {
   display: flex;
   align-items: center;
@@ -2805,49 +2802,41 @@ button:not(:disabled):active {
 }
 .progress-remaining-text {
   font-size: 12px;
-  font-weight: 700;
-  color: var(--color-primary-dark);
+  font-weight: 600;
+  color: var(--color-muted);
 }
 .progress-complete-banner {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #fbf0d0, #f3df9e);
-  border: 1px solid #d5aa4a;
-  color: #4f3404;
-  font-size: 12.5px;
-  font-weight: 800;
+  display: inline-block;
+  padding: 5px 11px;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary-soft);
+  border: 1px solid #c5d9d2;
+  color: var(--color-primary-dark);
+  font-size: 12px;
+  font-weight: 700;
 }
 .progress-next-strip {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-  padding: 9px 11px;
-  border-radius: 12px;
-  border: 1px solid #e7d8c5;
-  background: var(--color-canvas);
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid #e4dacb;
+  background: #fbf7f0;
 }
 .progress-next-info {
   min-width: 0;
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 11px;
   border: 0;
   padding: 0;
   background: transparent;
   text-align: left;
-  color: inherit;
-}
-.thumb-xs {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  flex: none;
+  color: var(--color-ink);
+  appearance: none;
 }
 .progress-next-info > span:last-child {
   min-width: 0;
@@ -2856,20 +2845,24 @@ button:not(:disabled):active {
 .progress-next-info small {
   display: block;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 700;
+  letter-spacing: .04em;
   color: var(--color-destination);
 }
 .progress-next-info strong {
   display: block;
-  font-size: 13px;
+  margin-top: 1px;
+  font: 600 13.5px/1.35 'Shippori Mincho', serif;
+  color: var(--color-ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .progress-next-info em {
   display: block;
+  margin-top: 2px;
   font-style: normal;
-  font-size: 10.5px;
+  font-size: 11px;
   color: var(--color-muted);
 }
 .progress-next-actions {
@@ -2880,59 +2873,57 @@ button:not(:disabled):active {
 }
 .done-quick-cta {
   min-height: 36px;
-  padding: 6px 12px;
-  border: 0;
+  padding: 6px 13px;
+  border: 1px solid var(--color-primary);
   border-radius: 999px;
-  background: linear-gradient(135deg, #1f7a5c, #185c47);
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-on-accent);
   font-size: 12px;
-  font-weight: 800;
-  box-shadow: 0 3px 10px rgb(24 92 71 / 24%);
-  transition: transform .12s ease, filter .12s ease;
+  font-weight: 700;
+  white-space: nowrap;
 }
-.done-quick-cta:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.done-quick-cta:hover { background: var(--color-primary-dark); border-color: var(--color-primary-dark); }
 
 .plan-order.is-done {
-  background: #237a5d;
-  border-color: #237a5d;
-  color: #fff;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-accent);
 }
 .done-toggle-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   border-radius: 999px;
-  padding: 5px 12px;
-  transition: background-color .15s ease, border-color .15s ease, transform .12s ease;
+  padding: 5px 11px;
 }
 .done-check-dot {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
-  border: 1.5px solid #9da6a8;
+  border: 1.5px solid var(--color-stone-dark);
   display: inline-grid;
   place-items: center;
-  font-size: 10px;
-  font-weight: 900;
+  font-size: 9.5px;
+  font-weight: 800;
   line-height: 1;
 }
 .done-toggle-btn.is-next-cta {
-  background: linear-gradient(135deg, #1f7a5c, #185c47);
-  border-color: #185c47;
-  color: #fff;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-accent);
 }
 .done-toggle-btn.is-next-cta .done-check-dot {
-  border-color: rgb(255 255 255 / 80%);
+  border-color: rgb(255 255 255 / 78%);
 }
 .done-toggle-btn.is-done {
-  background: #e4f4ed;
-  border-color: #2b8a68;
-  color: #145a41;
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
 }
 .done-toggle-btn.is-done .done-check-dot {
-  background: #237a5d;
-  border-color: #237a5d;
-  color: #fff;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-accent);
 }
 
 .map-toolbar-head {
@@ -2944,22 +2935,22 @@ button:not(:disabled):active {
 }
 .map-toolbar-pct {
   font-size: 11px;
-  font-weight: 700;
-  color: var(--color-primary-dark);
+  font-weight: 600;
+  color: var(--color-muted);
 }
 .map-mini-progress {
   margin-top: 5px;
-  height: 6px;
+  height: 5px;
   border-radius: 99px;
-  background: #e5ddd2;
+  background: #e6dfd5;
   overflow: hidden;
 }
 .map-mini-progress span {
   display: block;
   height: 100%;
   border-radius: 99px;
-  background: linear-gradient(90deg, #1f535a, #2b8a68);
-  transition: width .3s ease;
+  background: var(--color-primary);
+  transition: width .25s ease;
 }
 .map-toolbar-actions {
   display: flex;
@@ -2973,28 +2964,28 @@ button:not(:disabled):active {
   font-size: 11.5px;
 }
 .action-pill-done {
-  border-color: #2b8a68;
-  color: #145a41;
+  border-color: var(--color-line);
+  color: var(--color-ink);
 }
 .action-pill-done.done {
-  background: #237a5d;
-  border-color: #237a5d;
-  color: #fff;
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
 }
 
 /* ==================== MYPLAN ADD UI & FLOATING DOCK ==================== */
 .action-pill-myplan {
-  border-color: #d6aa4e;
-  background: #fffcf4;
-  color: #7c560d;
+  border-color: var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-ink);
 }
 .action-pill-myplan.active {
-  background: linear-gradient(135deg, #f3d778, #cfa032);
-  border-color: #b5841a;
-  color: #362200;
+  background: #fbf5e8;
+  border-color: var(--color-gold);
+  color: #6b4b19;
 }
 .audio-row.in-myplan {
-  border-left: 3.5px solid #cfa032;
+  border-color: #d6c29f;
   background: #fffdf8;
 }
 .myplan-toggle-btn {
@@ -3003,26 +2994,25 @@ button:not(:disabled):active {
   gap: 4px;
   min-height: 36px;
   padding: 0 11px;
-  border: 1.5px solid #d5b470;
+  border: 1px solid var(--color-line);
   border-radius: 999px;
-  background: #fffcf3;
-  color: #7a5410;
+  background: var(--color-surface);
+  color: var(--color-ink);
   font-size: 11.5px;
-  font-weight: 800;
+  font-weight: 700;
   white-space: nowrap;
-  transition: background-color .15s ease, transform .12s ease;
 }
-.myplan-toggle-btn:hover { background: #fbf1d6; }
+.myplan-toggle-btn:hover { border-color: var(--color-gold); color: #6b4b19; }
 .myplan-toggle-btn.active {
-  background: linear-gradient(135deg, #f3d778, #cfa032);
-  border-color: #b5841a;
-  color: #362200;
+  background: #fbf5e8;
+  border-color: var(--color-gold);
+  color: #6b4b19;
 }
 .audio-screen.has-myplan-dock {
-  padding-bottom: calc(154px + env(safe-area-inset-bottom));
+  padding-bottom: calc(152px + env(safe-area-inset-bottom));
 }
 .audio-screen.has-mini-player.has-myplan-dock {
-  padding-bottom: calc(226px + env(safe-area-inset-bottom));
+  padding-bottom: calc(224px + env(safe-area-inset-bottom));
 }
 .myplan-dock {
   position: fixed;
@@ -3036,11 +3026,12 @@ button:not(:disabled):active {
   justify-content: space-between;
   gap: 10px;
   padding: 10px 14px;
-  border-radius: 15px;
-  border: 1px solid #d6aa4e;
-  background: linear-gradient(135deg, #1b3f46, #143036);
-  color: #fff;
-  box-shadow: 0 10px 28px rgb(0 0 0 / 26%);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-line);
+  background: var(--color-sticky-surface);
+  backdrop-filter: blur(12px);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-soft);
 }
 .myplan-dock.with-mini-player {
   bottom: calc(144px + env(safe-area-inset-bottom));
@@ -3055,12 +3046,12 @@ button:not(:disabled):active {
 .myplan-dock-copy strong {
   display: block;
   font-size: 13px;
-  color: #f6e09e;
+  color: var(--color-ink);
 }
 .myplan-dock-copy small {
   display: block;
   font-size: 11px;
-  color: rgb(255 255 255 / 80%);
+  color: var(--color-muted);
   margin-top: 1px;
 }
 .myplan-dock-actions {
@@ -3069,22 +3060,20 @@ button:not(:disabled):active {
   gap: 6px;
   flex: none;
 }
-.myplan-dock .secondary.compact-btn {
-  background: rgb(255 255 255 / 12%);
-  border-color: rgb(255 255 255 / 45%);
-  color: #fff;
-}
-.myplan-dock .primary.compact-btn {
-  background: linear-gradient(135deg, #e7c67b, #c59638);
-  border-color: #f2d998;
-  color: #261802;
-}
 @media (max-width: 640px) {
+  .progress-next-strip {
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+  .progress-next-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
   .myplan-dock {
     padding: 9px 11px;
     gap: 8px;
   }
   .myplan-dock-copy strong { font-size: 12px; }
-  .myplan-dock-copy small { font-size: 10px; }
-  .myplan-dock .compact-btn { padding: 6px 10px; font-size: 11px; }
+  .myplan-dock-copy small { font-size: 10.5px; }
+  .myplan-dock .compact-btn { padding: 6px 10px; font-size: 11.5px; }
 }

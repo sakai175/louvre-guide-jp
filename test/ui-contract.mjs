@@ -98,6 +98,8 @@ assert.match(languageMarkup, /data-language-next/, 'language page must have a ne
 assert.doesNotMatch(courseSource.split('export function courseSelectView')[1].split('export function wireCourseSelect')[0], /home-language-list|data-set-lang/, 'route page must not repeat language selection');
 assert.match(splashSource, /appPhase = 'select_language'/, 'splash must lead to the language page');
 assert.match(css, /\.home-language-list\s*\{[^}]*overflow-y:\s*auto/s, 'language list must scroll vertically');
+assert.match(css, /\.course-brand-icon\s*\{[^}]*width:\s*\d+px/s, 'auth gate brand icon must have explicit dimensions');
+assert.match(css, /\.lang-pill\s*\{/, 'auth gate language switcher pills must be styled');
 assert.match(main, /data-change-course/);
 assert.match(main, /data-replay-onboarding/, 'settings tab must offer replay trigger for onboarding tour');
 assert.match(main, /data-tour-overlay/, 'coach-mark onboarding overlay must exist');
